@@ -9,392 +9,474 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{
-  --ink:#1c2e2e;          /* deep grounded teal-ink */
-  --ink-soft:#2c4242;
-  --paper:#f4efe7;         /* warm paper base */
-  --paper-deep:#ece3d6;
-  --clay:#c98a73;          /* warm clay */
-  --rose:#b86a78;          /* muted dusty rose, drawn from portrait */
-  --rose-soft:#d9a7ad;
-  --sage:#7d9285;          /* quiet sage */
-  --line:#1c2e2e;
-  --mist:rgba(28,46,46,.10);
-  --display:'Fraunces',Georgia,serif;
-  --body:'Inter',system-ui,sans-serif;
-  --ease:cubic-bezier(.16,1,.3,1);
-  --ease-soft:cubic-bezier(.4,0,.2,1);
-  --pad:clamp(1.4rem,5vw,7rem);
-  --section:clamp(5rem,11vw,11rem);
+:root {
+  --ink: #1c2e2e;
+  --ink-soft: #2c4242;
+  --paper: #f4efe7;
+  --paper-deep: #ece3d6;
+  --clay: #c98a73;
+  --rose: #b86a78;
+  --rose-soft: #d9a7ad;
+  --sage: #7d9285;
+  --line: #1c2e2e;
+  --mist: rgba(28,46,46,.10);
+  --display: 'Fraunces', Georgia, serif;
+  --body: 'Inter', system-ui, sans-serif;
+  --ease: cubic-bezier(.16,1,.3,1);
+  --ease-soft: cubic-bezier(.4,0,.2,1);
+  --pad: clamp(1.4rem, 5vw, 7rem);
+  --section: clamp(5rem, 11vw, 11rem);
 }
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{
-  background:var(--paper);color:var(--ink);
-  font-family:var(--body);font-weight:400;line-height:1.6;
-  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
-  overflow-x:hidden;
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  background: var(--paper); color: var(--ink);
+  font-family: var(--body); font-weight: 400; line-height: 1.6;
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
-::selection{background:var(--rose);color:var(--paper)}
-::-webkit-scrollbar{width:11px}
-::-webkit-scrollbar-track{background:var(--paper-deep)}
-::-webkit-scrollbar-thumb{background:var(--ink-soft);border:3px solid var(--paper-deep);border-radius:10px}
-img{display:block;max-width:100%}
-a{color:inherit;text-decoration:none}
-h1,h2,h3,h4{font-family:var(--display);font-weight:340;line-height:1.04;letter-spacing:-.015em}
-.serif-i{font-style:italic;font-weight:340}
+::selection { background: var(--rose); color: var(--paper); }
+::-webkit-scrollbar { width: 11px; }
+::-webkit-scrollbar-track { background: var(--paper-deep); }
+::-webkit-scrollbar-thumb { background: var(--ink-soft); border: 3px solid var(--paper-deep); border-radius: 10px; }
+img { display: block; max-width: 100%; cursor: zoom-in; }
+a { color: inherit; text-decoration: none; }
+h1, h2, h3, h4 { font-family: var(--display); font-weight: 340; line-height: 1.04; letter-spacing: -.015em; }
+.serif-i { font-style: italic; font-weight: 340; }
+
+/* ---------- LIGHTBOX ---------- */
+#lightbox {
+  position: fixed; inset: 0; z-index: 10000; background: rgba(28, 46, 46, 0.96);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; visibility: hidden; transition: opacity .4s var(--ease), visibility .4s;
+  backdrop-filter: blur(8px);
+}
+#lightbox.open { opacity: 1; visibility: visible; }
+#lightbox img {
+  max-width: 90vw; max-height: 90vh; border-radius: 4px; cursor: zoom-out;
+  box-shadow: 0 10px 50px rgba(0,0,0,.4); transform: scale(0.95); transition: transform .4s var(--ease);
+}
+#lightbox.open img { transform: scale(1); }
+.lb-close {
+  position: absolute; top: clamp(1rem, 3vw, 2rem); right: clamp(1rem, 3vw, 2rem);
+  background: none; border: none; color: var(--paper); font-size: 3rem; cursor: pointer;
+  line-height: 1; transition: color .3s;
+}
+.lb-close:hover { color: var(--rose-soft); }
 
 /* ---------- LOADER ---------- */
-#loader{position:fixed;inset:0;z-index:9999;background:var(--ink);
-  display:flex;align-items:center;justify-content:center;flex-direction:column;
-  transition:opacity .9s var(--ease),visibility .9s var(--ease)}
-#loader.done{opacity:0;visibility:hidden}
-.load-mark{font-family:var(--display);color:var(--paper);font-size:clamp(2.6rem,9vw,5rem);
-  font-style:italic;font-weight:340;display:flex;gap:.04em;overflow:hidden}
-.load-mark span{display:inline-block;transform:translateY(110%);animation:loadUp .9s var(--ease) forwards}
-@keyframes loadUp{to{transform:translateY(0)}}
-.load-line{width:0;height:1px;background:var(--rose-soft);margin-top:1.6rem;animation:loadLine 1.3s .5s var(--ease) forwards}
-@keyframes loadLine{to{width:min(260px,52vw)}}
-.load-sub{color:var(--rose-soft);font-size:.7rem;letter-spacing:.32em;text-transform:uppercase;
-  margin-top:1.2rem;opacity:0;animation:fadeIn .8s 1s forwards}
-@keyframes fadeIn{to{opacity:.85}}
+#loader {
+  position: fixed; inset: 0; z-index: 9999; background: var(--ink);
+  display: flex; align-items: center; justify-content: center; flex-direction: column;
+  transition: opacity .9s var(--ease), visibility .9s var(--ease);
+}
+#loader.done { opacity: 0; visibility: hidden; }
+.load-mark {
+  font-family: var(--display); color: var(--rose-soft); font-size: clamp(6rem, 15vw, 12rem);
+  font-weight: 300; display: flex; overflow: hidden; line-height: 1;
+}
+.load-mark span { display: inline-block; transform: translateY(110%); animation: loadUp 1s var(--ease) forwards; }
+@keyframes loadUp { to { transform: translateY(0); } }
+.load-sub {
+  color: rgba(244, 239, 231, 0.6); font-size: .75rem; letter-spacing: .4em; text-transform: uppercase;
+  margin-top: 1.5rem; opacity: 0; animation: fadeIn .8s 1s forwards;
+}
+@keyframes fadeIn { to { opacity: 1; } }
 
 /* ---------- NAV ---------- */
-header{position:fixed;top:0;left:0;width:100%;z-index:900;
-  padding:clamp(1.1rem,2.5vw,1.7rem) var(--pad);
-  display:flex;align-items:center;justify-content:space-between;
-  transition:background .5s var(--ease),padding .5s var(--ease),box-shadow .5s var(--ease)}
-header.scrolled{background:rgba(244,239,231,.88);backdrop-filter:blur(14px);
-  padding-top:.9rem;padding-bottom:.9rem;box-shadow:0 1px 0 var(--mist)}
-.brand{display:flex;align-items:center;gap:.6rem;font-family:var(--display);font-size:1.18rem;letter-spacing:-.01em;transition:color .5s}
-.brand .psi{display:inline-flex;align-items:center;justify-content:center;width:1.9rem;height:1.9rem;
-  border:1px solid currentColor;border-radius:50%;font-style:italic;font-size:1rem;flex:none}
-.brand small{display:block;font-family:var(--body);font-size:.56rem;letter-spacing:.24em;
-  text-transform:uppercase;opacity:.6;margin-top:1px}
-.hero-mode .brand,.hero-mode .nav-links a,.hero-mode .nav-toggle{color:var(--paper)}
-nav{display:flex;align-items:center;gap:clamp(1.2rem,2.6vw,2.4rem)}
-.nav-links{display:flex;gap:clamp(1.1rem,2.4vw,2.1rem);align-items:center}
-.nav-links a{font-size:.82rem;letter-spacing:.02em;position:relative;transition:color .5s}
-.nav-links a:not(.nav-cta)::after{content:"";position:absolute;left:0;bottom:-4px;width:0;height:1px;
-  background:currentColor;transition:width .4s var(--ease)}
-.nav-links a:not(.nav-cta):hover::after{width:100%}
-.nav-cta{border:1px solid currentColor;padding:.55rem 1.1rem;border-radius:40px;
-  transition:background .4s var(--ease),color .4s var(--ease)}
-.nav-cta:hover{background:var(--rose);border-color:var(--rose);color:var(--paper)!important}
-.lang-toggle{display:flex;align-items:center;gap:.3rem;font-size:.74rem;letter-spacing:.06em}
-.lang-toggle button{background:none;border:none;color:inherit;cursor:pointer;font:inherit;
-  opacity:.45;padding:.2rem;transition:opacity .3s}
-.lang-toggle button.active{opacity:1;text-decoration:underline;text-underline-offset:3px}
-.lang-toggle span{opacity:.3}
-.nav-toggle{display:none;background:none;border:none;cursor:pointer;color:var(--ink);
-  width:30px;height:22px;position:relative;z-index:1001}
-.nav-toggle span{position:absolute;left:0;width:100%;height:1.5px;background:currentColor;transition:.4s var(--ease)}
-.nav-toggle span:nth-child(1){top:3px}
-.nav-toggle span:nth-child(2){top:10px}
-.nav-toggle span:nth-child(3){top:17px}
-body.menu-open .nav-toggle span:nth-child(1){top:10px;transform:rotate(45deg)}
-body.menu-open .nav-toggle span:nth-child(2){opacity:0}
-body.menu-open .nav-toggle span:nth-child(3){top:10px;transform:rotate(-45deg)}
+header {
+  position: fixed; top: 0; left: 0; width: 100%; z-index: 900;
+  padding: clamp(1.1rem, 2.5vw, 1.7rem) var(--pad);
+  display: flex; align-items: center; justify-content: space-between;
+  transition: background .5s var(--ease), padding .5s var(--ease), box-shadow .5s var(--ease);
+}
+header.scrolled {
+  background: rgba(244,239,231,.92); backdrop-filter: blur(14px);
+  padding-top: .9rem; padding-bottom: .9rem; box-shadow: 0 1px 0 var(--mist);
+}
+.brand { display: flex; align-items: center; gap: .6rem; font-family: var(--display); font-size: 1.18rem; letter-spacing: -.01em; transition: color .5s; }
+.brand .psi {
+  display: inline-flex; align-items: center; justify-content: center; width: 1.9rem; height: 1.9rem;
+  border: 1px solid currentColor; border-radius: 50%; font-style: italic; font-size: 1rem; flex: none;
+}
+.brand small {
+  display: block; font-family: var(--body); font-size: .56rem; letter-spacing: .24em;
+  text-transform: uppercase; opacity: .6; margin-top: 1px;
+}
+.hero-mode .brand, .hero-mode .nav-links a, .hero-mode .nav-toggle { color: var(--paper); }
+nav { display: flex; align-items: center; gap: clamp(1.2rem, 2.6vw, 2.4rem); }
+.nav-links { display: flex; gap: clamp(1.1rem, 2.4vw, 2.1rem); align-items: center; }
+.nav-links a { font-size: .82rem; letter-spacing: .02em; position: relative; transition: color .5s; }
+.nav-links a:not(.nav-cta)::after {
+  content: ""; position: absolute; left: 0; bottom: -4px; width: 0; height: 1px;
+  background: currentColor; transition: width .4s var(--ease);
+}
+.nav-links a:not(.nav-cta):hover::after { width: 100%; }
+.nav-cta {
+  border: 1px solid currentColor; padding: .55rem 1.1rem; border-radius: 40px;
+  transition: background .4s var(--ease), color .4s var(--ease);
+}
+.nav-cta:hover { background: var(--rose); border-color: var(--rose); color: var(--paper)!important; }
+.lang-toggle { display: flex; align-items: center; gap: .3rem; font-size: .74rem; letter-spacing: .06em; }
+.lang-toggle button {
+  background: none; border: none; color: inherit; cursor: pointer; font: inherit;
+  opacity: .45; padding: .2rem; transition: opacity .3s;
+}
+.lang-toggle button.active { opacity: 1; font-weight: 500; }
+.lang-toggle span { opacity: .3; }
+.nav-toggle {
+  display: none; background: none; border: none; cursor: pointer; color: var(--ink);
+  width: 30px; height: 22px; position: relative; z-index: 1001;
+}
+.nav-toggle span { position: absolute; left: 0; width: 100%; height: 1.5px; background: currentColor; transition: .4s var(--ease); }
+.nav-toggle span:nth-child(1) { top: 3px; }
+.nav-toggle span:nth-child(2) { top: 10px; }
+.nav-toggle span:nth-child(3) { top: 17px; }
+body.menu-open .nav-toggle span:nth-child(1) { top: 10px; transform: rotate(45deg); opacity: 0; }
+body.menu-open .nav-toggle span:nth-child(2) { opacity: 0; }
+body.menu-open .nav-toggle span:nth-child(3) { top: 10px; transform: rotate(-45deg); opacity: 0; }
 
 /* ---------- MOBILE MENU ---------- */
-.mobile-menu{position:fixed;inset:0;z-index:950;background:var(--ink);
-  display:flex;flex-direction:column;justify-content:center;padding:var(--pad);
-  transform:translateY(-100%);transition:transform .7s var(--ease);visibility:hidden}
-body.menu-open .mobile-menu{transform:translateY(0);visibility:visible}
-.mobile-menu a{color:var(--paper);font-family:var(--display);font-size:clamp(1.9rem,8vw,3rem);
-  font-weight:340;padding:.35rem 0;display:block;opacity:0;transform:translateY(20px);transition:.6s var(--ease)}
-body.menu-open .mobile-menu a{opacity:1;transform:translateY(0)}
-body.menu-open .mobile-menu a:nth-child(1){transition-delay:.18s}
-body.menu-open .mobile-menu a:nth-child(2){transition-delay:.25s}
-body.menu-open .mobile-menu a:nth-child(3){transition-delay:.32s}
-body.menu-open .mobile-menu a:nth-child(4){transition-delay:.39s}
-body.menu-open .mobile-menu a:nth-child(5){transition-delay:.46s}
-body.menu-open .mobile-menu a:nth-child(6){transition-delay:.53s}
-.mobile-menu .mm-foot{margin-top:2.5rem;color:var(--rose-soft);font-family:var(--body);
-  font-size:.78rem;letter-spacing:.04em;opacity:0;transition:.6s .6s var(--ease)}
-body.menu-open .mobile-menu .mm-foot{opacity:.8;transform:none}
+.mobile-menu {
+  position: fixed; inset: 0; z-index: 950; background: var(--ink);
+  display: flex; flex-direction: column; justify-content: center; padding: var(--pad);
+  transform: translateY(-100%); transition: transform .7s var(--ease); visibility: hidden;
+}
+body.menu-open .mobile-menu { transform: translateY(0); visibility: visible; }
+.mobile-close {
+  position: absolute; top: clamp(1rem, 2.5vw, 1.5rem); right: var(--pad);
+  background: none; border: none; color: var(--paper); font-size: 3.5rem;
+  font-weight: 300; cursor: pointer; line-height: 1; transition: color .3s;
+  opacity: 0; transform: scale(0.8); transition: all 0.5s var(--ease);
+}
+body.menu-open .mobile-close { opacity: 1; transform: scale(1); transition-delay: 0.3s; }
+.mobile-close:hover { color: var(--rose-soft); }
+.mobile-menu a {
+  color: var(--paper); font-family: var(--display); font-size: clamp(2rem, 9vw, 3.5rem);
+  font-weight: 340; padding: .4rem 0; display: block; opacity: 0; transform: translateY(20px); transition: .6s var(--ease);
+}
+body.menu-open .mobile-menu a { opacity: 1; transform: translateY(0); }
+body.menu-open .mobile-menu a:nth-child(2) { transition-delay: .15s; }
+body.menu-open .mobile-menu a:nth-child(3) { transition-delay: .22s; }
+body.menu-open .mobile-menu a:nth-child(4) { transition-delay: .29s; }
+body.menu-open .mobile-menu a:nth-child(5) { transition-delay: .36s; }
+.mobile-menu .mm-foot {
+  margin-top: 3rem; color: var(--rose-soft); font-family: var(--body);
+  font-size: .85rem; letter-spacing: .04em; opacity: 0; transition: .6s .5s var(--ease);
+}
+body.menu-open .mobile-menu .mm-foot { opacity: .8; transform: none; }
 
 /* ---------- HERO ---------- */
-.hero{min-height:100svh;position:relative;display:flex;align-items:flex-end;
-  padding:var(--pad);padding-bottom:clamp(2.5rem,6vw,5rem);background:var(--ink);overflow:hidden}
-.hero-thread{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
-.hero-thread path{fill:none;stroke:var(--rose-soft);stroke-width:1.1;opacity:.5;
-  stroke-dasharray:2600;stroke-dashoffset:2600;animation:draw 3s 1.1s var(--ease) forwards}
-@keyframes draw{to{stroke-dashoffset:0}}
-.hero-glow{position:absolute;border-radius:50%;filter:blur(90px);z-index:0;animation:floaty 14s ease-in-out infinite}
-.hero-glow.a{width:50vw;height:50vw;background:rgba(184,106,120,.30);top:-12%;right:-10%}
-.hero-glow.b{width:38vw;height:38vw;background:rgba(125,146,133,.26);bottom:-14%;left:-8%;animation-delay:-6s}
-@keyframes floaty{0%,100%{transform:translate(0,0)}50%{transform:translate(2.5%,4%)}}
-.hero-inner{position:relative;z-index:3;width:100%;max-width:1500px;margin:0 auto}
-.hero-eyebrow{color:var(--rose-soft);font-size:.72rem;letter-spacing:.34em;text-transform:uppercase;
-  margin-bottom:clamp(1.3rem,3vw,2.2rem);display:flex;align-items:center;gap:.9rem;
-  opacity:0;animation:rise .9s 1.4s var(--ease) forwards}
-.hero-eyebrow::before{content:"";width:clamp(28px,5vw,60px);height:1px;background:var(--rose-soft)}
-.hero h1{color:var(--paper);font-size:clamp(2.7rem,8.4vw,8.2rem);max-width:15ch}
-.hero h1 .ln{display:block;overflow:hidden}
-.hero h1 .ln>span{display:block;transform:translateY(110%);animation:heroUp 1.05s var(--ease) forwards}
-.hero h1 .ln:nth-child(1)>span{animation-delay:1.5s}
-.hero h1 .ln:nth-child(2)>span{animation-delay:1.62s}
-.hero h1 .ln:nth-child(3)>span{animation-delay:1.74s}
-@keyframes heroUp{to{transform:translateY(0)}}
-.hero-foot{display:flex;flex-wrap:wrap;gap:clamp(1.5rem,4vw,4rem);align-items:flex-end;
-  justify-content:space-between;margin-top:clamp(2rem,5vw,3.4rem);
-  opacity:0;animation:rise 1s 2.3s var(--ease) forwards}
-.hero-foot p{color:var(--paper);opacity:.78;max-width:42ch;font-size:clamp(.95rem,1.3vw,1.08rem);font-weight:300}
-.hero-cta{display:inline-flex;align-items:center;gap:.7rem;color:var(--ink);background:var(--paper);
-  padding:.95rem 1.7rem;border-radius:44px;font-size:.88rem;letter-spacing:.02em;white-space:nowrap;
-  transition:transform .4s var(--ease),background .4s,color .4s}
-.hero-cta:hover{transform:translateY(-3px);background:var(--rose);color:var(--paper)}
-.hero-cta svg{transition:transform .4s var(--ease)}
-.hero-cta:hover svg{transform:translate(4px,-4px)}
-@keyframes rise{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
-.scroll-cue{position:absolute;bottom:clamp(1.4rem,3vw,2rem);left:50%;transform:translateX(-50%);
-  z-index:3;color:var(--rose-soft);font-size:.62rem;letter-spacing:.3em;text-transform:uppercase;
-  display:flex;flex-direction:column;align-items:center;gap:.6rem;opacity:0;animation:fadeIn 1s 2.8s forwards}
-.scroll-cue i{width:1px;height:34px;background:var(--rose-soft);position:relative;overflow:hidden}
-.scroll-cue i::after{content:"";position:absolute;top:-100%;left:0;width:100%;height:100%;
-  background:var(--paper);animation:cueRun 2s var(--ease) infinite}
-@keyframes cueRun{to{top:100%}}
+.hero {
+  min-height: 100svh; position: relative; display: flex; align-items: flex-end;
+  padding: var(--pad); padding-bottom: clamp(2.5rem, 6vw, 5rem); background: var(--ink); overflow: hidden;
+}
+.hero-thread { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+.hero-thread path {
+  fill: none; stroke: var(--rose-soft); stroke-width: 1.1; opacity: .5;
+  stroke-dasharray: 2600; stroke-dashoffset: 2600; animation: draw 3s 1.1s var(--ease) forwards;
+}
+@keyframes draw { to { stroke-dashoffset: 0; } }
+.hero-glow { position: absolute; border-radius: 50%; filter: blur(90px); z-index: 0; animation: floaty 14s ease-in-out infinite; }
+.hero-glow.a { width: 50vw; height: 50vw; background: rgba(184,106,120,.30); top: -12%; right: -10%; }
+.hero-glow.b { width: 38vw; height: 38vw; background: rgba(125,146,133,.26); bottom: -14%; left: -8%; animation-delay: -6s; }
+@keyframes floaty { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(2.5%, 4%); } }
+.hero-inner { position: relative; z-index: 3; width: 100%; max-width: 1500px; margin: 0 auto; }
+.hero-eyebrow {
+  color: var(--rose-soft); font-size: .72rem; letter-spacing: .34em; text-transform: uppercase;
+  margin-bottom: clamp(1.3rem, 3vw, 2.2rem); display: flex; align-items: center; gap: .9rem;
+  opacity: 0; animation: rise .9s 1.4s var(--ease) forwards;
+}
+.hero-eyebrow::before { content: ""; width: clamp(28px, 5vw, 60px); height: 1px; background: var(--rose-soft); }
+.hero h1 { color: var(--paper); font-size: clamp(2.7rem, 8.4vw, 8.2rem); max-width: 15ch; }
+.hero h1 .ln { display: block; overflow: hidden; }
+.hero h1 .ln > span { display: block; transform: translateY(110%); animation: heroUp 1.05s var(--ease) forwards; }
+.hero h1 .ln:nth-child(1) > span { animation-delay: 1.5s; }
+.hero h1 .ln:nth-child(2) > span { animation-delay: 1.62s; }
+@keyframes heroUp { to { transform: translateY(0); } }
+.hero-foot {
+  display: flex; flex-wrap: wrap; gap: clamp(1.5rem, 4vw, 4rem); align-items: flex-end;
+  justify-content: space-between; margin-top: clamp(2rem, 5vw, 3.4rem);
+  opacity: 0; animation: rise 1s 2.3s var(--ease) forwards;
+}
+.hero-foot p { color: var(--paper); opacity: .85; max-width: 48ch; font-size: clamp(.95rem, 1.3vw, 1.1rem); font-weight: 300; }
+.hero-cta {
+  display: inline-flex; align-items: center; gap: .7rem; color: var(--ink); background: var(--paper);
+  padding: .95rem 1.7rem; border-radius: 44px; font-size: .88rem; font-weight: 500; letter-spacing: .02em; white-space: nowrap;
+  transition: transform .4s var(--ease), background .4s, color .4s;
+}
+.hero-cta:hover { transform: translateY(-3px); background: var(--rose); color: var(--paper); }
+.hero-cta svg { transition: transform .4s var(--ease); }
+.hero-cta:hover svg { transform: translate(4px, -4px); }
+@keyframes rise { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+.scroll-cue {
+  position: absolute; bottom: clamp(1.4rem, 3vw, 2rem); left: 50%; transform: translateX(-50%);
+  z-index: 3; color: var(--rose-soft); font-size: .62rem; letter-spacing: .3em; text-transform: uppercase;
+  display: flex; flex-direction: column; align-items: center; gap: .6rem; opacity: 0; animation: fadeIn 1s 2.8s forwards;
+}
+.scroll-cue i { width: 1px; height: 34px; background: var(--rose-soft); position: relative; overflow: hidden; }
+.scroll-cue i::after {
+  content: ""; position: absolute; top: -100%; left: 0; width: 100%; height: 100%;
+  background: var(--paper); animation: cueRun 2s var(--ease) infinite;
+}
+@keyframes cueRun { to { top: 100%; } }
 
 /* ---------- MARQUEE ---------- */
-.marquee{background:var(--rose);color:var(--paper);overflow:hidden;padding:1.05rem 0;
-  border-top:1px solid rgba(244,239,231,.2);border-bottom:1px solid rgba(244,239,231,.2)}
-.marquee-track{display:flex;width:max-content;animation:slide 38s linear infinite}
-.marquee:hover .marquee-track{animation-play-state:paused}
-.marquee span{font-family:var(--display);font-style:italic;font-size:clamp(1.1rem,2.4vw,1.7rem);
-  padding:0 1.4rem;display:flex;align-items:center;gap:1.8rem;white-space:nowrap}
-.marquee span::after{content:"✳";font-style:normal;font-size:.7em;opacity:.6}
-@keyframes slide{to{transform:translateX(-50%)}}
+.marquee {
+  background: var(--rose); color: var(--paper); overflow: hidden; padding: 1.05rem 0;
+  border-top: 1px solid rgba(244,239,231,.2); border-bottom: 1px solid rgba(244,239,231,.2);
+}
+.marquee-track { display: flex; width: max-content; animation: slide 38s linear infinite; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+.marquee span {
+  font-family: var(--display); font-style: italic; font-size: clamp(1.1rem, 2.4vw, 1.7rem);
+  padding: 0 1.4rem; display: flex; align-items: center; gap: 1.8rem; white-space: nowrap;
+}
+.marquee span::after { content: "✳"; font-style: normal; font-size: .7em; opacity: .6; }
+@keyframes slide { to { transform: translateX(-50%); } }
 
 /* ---------- GENERIC SECTION ---------- */
-section{position:relative}
-.wrap{max-width:1400px;margin:0 auto;padding:var(--section) var(--pad)}
-.eyebrow{font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;color:var(--rose);
-  display:flex;align-items:center;gap:.8rem;margin-bottom:1.6rem}
-.eyebrow::before{content:"";width:34px;height:1px;background:var(--clay)}
-.reveal{opacity:0;transform:translateY(34px);transition:opacity 1s var(--ease),transform 1s var(--ease)}
-.reveal.in{opacity:1;transform:none}
-.reveal.d1{transition-delay:.1s}.reveal.d2{transition-delay:.2s}.reveal.d3{transition-delay:.3s}.reveal.d4{transition-delay:.4s}
+section { position: relative; }
+.wrap { max-width: 1400px; margin: 0 auto; padding: var(--section) var(--pad); }
+.eyebrow {
+  font-size: .7rem; letter-spacing: .3em; text-transform: uppercase; color: var(--rose);
+  display: flex; align-items: center; gap: .8rem; margin-bottom: 1.6rem; font-weight: 500;
+}
+.eyebrow::before { content: ""; width: 34px; height: 1px; background: var(--clay); }
+.reveal { opacity: 0; transform: translateY(34px); transition: opacity 1s var(--ease), transform 1s var(--ease); }
+.reveal.in { opacity: 1; transform: none; }
+.reveal.d1 { transition-delay: .1s; } .reveal.d2 { transition-delay: .2s; } .reveal.d3 { transition-delay: .3s; } .reveal.d4 { transition-delay: .4s; }
 
 /* ---------- ABOUT ---------- */
-.about{background:var(--paper-deep)}
-.about-grid{display:grid;grid-template-columns:1fr 1.25fr;gap:clamp(2.5rem,6vw,6rem);align-items:center}
-.about-portrait{position:relative}
-.about-portrait .frame{position:relative;overflow:hidden;border-radius:200px 200px 12px 12px;aspect-ratio:3/3.7}
-.about-portrait img{width:100%;height:100%;object-fit:cover;filter:saturate(.92);
-  transition:transform 1.2s var(--ease)}
-.about-portrait:hover img{transform:scale(1.04)}
-.about-portrait .tag{position:absolute;bottom:-1.1rem;left:-1.1rem;background:var(--ink);color:var(--paper);
-  padding:.85rem 1.3rem;border-radius:10px;font-size:.74rem;letter-spacing:.04em;line-height:1.4;max-width:62%}
-.about-portrait .tag b{font-family:var(--display);font-style:italic;font-weight:340;display:block;font-size:1.05rem;letter-spacing:0}
-.about-arc{position:absolute;top:-2rem;right:-2rem;width:120px;height:120px;z-index:-1;opacity:.5}
-.about-arc svg{width:100%;height:100%}
-.about h2{font-size:clamp(1.9rem,4.4vw,3.6rem);margin-bottom:1.7rem;max-width:16ch}
-.about p{font-weight:300;color:var(--ink-soft);margin-bottom:1.15rem;max-width:60ch}
-.pullquote{font-family:var(--display);font-style:italic;font-weight:340;
-  font-size:clamp(1.4rem,2.7vw,2.05rem);line-height:1.3;color:var(--ink);
-  margin:2.2rem 0 1.6rem;padding-left:1.5rem;border-left:2px solid var(--rose);max-width:24ch}
-.cred-row{display:flex;flex-wrap:wrap;gap:1.8rem 2.6rem;margin-top:2rem}
-.cred-row div{max-width:18ch}
-.cred-row .n{font-family:var(--display);font-size:1.7rem;color:var(--rose);line-height:1}
-.cred-row .l{font-size:.78rem;color:var(--ink-soft);margin-top:.4rem;letter-spacing:.02em}
+.about { background: var(--paper-deep); }
+.about-grid { display: grid; grid-template-columns: 1fr 1.25fr; gap: clamp(2.5rem, 6vw, 6rem); align-items: center; }
+.about-portrait { position: relative; }
+.about-portrait .frame { position: relative; overflow: hidden; border-radius: 200px 200px 12px 12px; aspect-ratio: 3/3.7; }
+.about-portrait img { width: 100%; height: 100%; object-fit: cover; filter: saturate(.92); transition: transform 1.2s var(--ease); }
+.about-portrait:hover img { transform: scale(1.04); }
+.about-portrait .tag {
+  position: absolute; bottom: -1.1rem; left: -1.1rem; background: var(--ink); color: var(--paper);
+  padding: 1rem 1.4rem; border-radius: 12px; font-size: .78rem; letter-spacing: .02em; line-height: 1.5; max-width: 65%;
+}
+.about-portrait .tag b { font-family: var(--display); font-style: italic; font-weight: 340; display: block; font-size: 1.15rem; letter-spacing: 0; margin-bottom: .2rem; }
+.about-arc { position: absolute; top: -2rem; right: -2rem; width: 120px; height: 120px; z-index: -1; opacity: .5; }
+.about-arc svg { width: 100%; height: 100%; }
+.about h2 { font-size: clamp(1.9rem, 4.4vw, 3.6rem); margin-bottom: 1.7rem; max-width: 16ch; }
+.about p { font-weight: 300; color: var(--ink-soft); margin-bottom: 1.2rem; max-width: 62ch; font-size: 1.05rem; }
+.pullquote {
+  font-family: var(--display); font-style: italic; font-weight: 340;
+  font-size: clamp(1.4rem, 2.7vw, 2.05rem); line-height: 1.3; color: var(--ink);
+  margin: 2.5rem 0 2rem; padding-left: 1.5rem; border-left: 2px solid var(--rose); max-width: 26ch;
+}
+.cred-row { display: flex; flex-wrap: wrap; gap: 1.8rem 2.6rem; margin-top: 2.5rem; }
+.cred-row div { max-width: 18ch; }
+.cred-row .n { font-family: var(--display); font-size: 1.7rem; color: var(--rose); line-height: 1; }
+.cred-row .l { font-size: .8rem; color: var(--ink-soft); margin-top: .5rem; letter-spacing: .02em; font-weight: 500;}
 
-/* ---------- SERVICES ---------- */
-.services h2{font-size:clamp(2rem,5vw,4rem);max-width:14ch;margin-bottom:.8rem}
-.services .intro{font-weight:300;color:var(--ink-soft);max-width:52ch;margin-bottom:clamp(2.5rem,5vw,4rem)}
-.svc-list{border-top:1px solid var(--mist)}
-.svc{border-bottom:1px solid var(--mist);cursor:pointer}
-.svc-head{display:grid;grid-template-columns:auto 1fr auto;gap:clamp(1rem,3vw,2.5rem);
-  align-items:center;padding:clamp(1.6rem,3vw,2.4rem) 0;transition:padding-left .5s var(--ease)}
-.svc:hover .svc-head{padding-left:.7rem}
-.svc-num{font-family:var(--display);font-style:italic;color:var(--rose);font-size:1rem;width:2.4ch}
-.svc-title{font-family:var(--display);font-size:clamp(1.3rem,3vw,2.2rem);font-weight:340;transition:color .4s}
-.svc:hover .svc-title{color:var(--rose)}
-.svc-plus{width:34px;height:34px;border:1px solid var(--mist);border-radius:50%;position:relative;flex:none;transition:.5s var(--ease)}
-.svc-plus::before,.svc-plus::after{content:"";position:absolute;background:var(--ink);transition:.5s var(--ease)}
-.svc-plus::before{top:50%;left:25%;width:50%;height:1.5px;transform:translateY(-50%)}
-.svc-plus::after{left:50%;top:25%;height:50%;width:1.5px;transform:translateX(-50%)}
-.svc.open .svc-plus{background:var(--rose);border-color:var(--rose);transform:rotate(135deg)}
-.svc.open .svc-plus::before,.svc.open .svc-plus::after{background:var(--paper)}
-.svc-body{max-height:0;overflow:hidden;transition:max-height .6s var(--ease)}
-.svc-body-inner{padding:0 0 clamp(1.8rem,3vw,2.6rem) calc(2.4ch + clamp(1rem,3vw,2.5rem));display:grid;
-  grid-template-columns:1.4fr 1fr;gap:clamp(1.5rem,4vw,3.5rem)}
-.svc-body p{font-weight:300;color:var(--ink-soft);max-width:54ch}
-.svc-tags{display:flex;flex-direction:column;gap:.55rem;align-items:flex-start}
-.svc-tags span{font-size:.78rem;letter-spacing:.02em;color:var(--ink-soft);
-  background:var(--paper-deep);border:1px solid var(--mist);padding:.4rem .85rem;border-radius:30px}
+/* ---------- THREADED SERVICES ---------- */
+.services h2 { font-size: clamp(2rem, 5vw, 4rem); max-width: 14ch; margin-bottom: 1rem; }
+.services .intro { font-weight: 300; color: var(--ink-soft); max-width: 56ch; margin-bottom: clamp(3rem, 6vw, 5rem); font-size: 1.05rem; }
+
+.svc-thread-container { position: relative; padding-left: clamp(2rem, 5vw, 4rem); padding-bottom: 2rem; }
+.svc-line { position: absolute; top: 10px; bottom: 0; left: 0; width: 1px; background: var(--mist); }
+.svc-line-progress { position: absolute; top: 10px; left: 0; width: 1px; background: var(--rose); height: 0; transition: height 0.1s linear; z-index: 1; }
+
+.svc-item { position: relative; margin-bottom: clamp(3rem, 6vw, 5rem); }
+.svc-item:last-child { margin-bottom: 0; }
+.svc-node {
+  position: absolute; left: calc(clamp(2rem, 5vw, 4rem) * -1 - 4.5px); top: 12px;
+  width: 10px; height: 10px; border-radius: 50%; background: var(--paper-deep);
+  border: 1px solid var(--mist); transition: all .4s var(--ease); z-index: 2;
+}
+.svc-item.in .svc-node { background: var(--rose); border-color: var(--rose); box-shadow: 0 0 0 4px rgba(184, 106, 120, 0.15); }
+
+.svc-num { font-family: var(--display); font-style: italic; color: var(--rose); font-size: 1rem; margin-bottom: 0.5rem; display: block; }
+.svc-title { font-family: var(--display); font-size: clamp(1.5rem, 3vw, 2.4rem); font-weight: 340; margin-bottom: 1rem; color: var(--ink); }
+.svc-content p { font-weight: 300; color: var(--ink-soft); max-width: 58ch; font-size: 1.02rem; margin-bottom: 1.5rem; }
+.svc-tags { display: flex; flex-wrap: wrap; gap: .6rem; }
+.svc-tags span {
+  font-size: .78rem; letter-spacing: .02em; color: var(--ink-soft); font-weight: 500;
+  background: var(--paper-deep); border: 1px solid var(--mist); padding: .4rem .85rem; border-radius: 30px;
+}
 
 /* ---------- PSYCHOSOMATIC FEATURE ---------- */
-.soma{background:var(--ink);color:var(--paper);position:relative;overflow:hidden}
-.soma .glow{position:absolute;width:46vw;height:46vw;border-radius:50%;
-  background:rgba(184,106,120,.2);filter:blur(110px);top:10%;left:-12%;z-index:0}
-.soma .wrap{position:relative;z-index:2}
-.soma .eyebrow{color:var(--rose-soft)}.soma .eyebrow::before{background:var(--rose-soft)}
-.soma h2{font-size:clamp(2rem,5vw,4.2rem);max-width:18ch;margin-bottom:1.4rem;color:var(--paper)}
-.soma .lead{font-weight:300;color:rgba(244,239,231,.78);max-width:56ch;
-  font-size:clamp(1.02rem,1.5vw,1.2rem);margin-bottom:clamp(2.5rem,5vw,4rem)}
-.soma-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(1.3rem,3vw,2.4rem)}
-.soma-card{border:1px solid rgba(244,239,231,.16);border-radius:14px;padding:clamp(1.6rem,3vw,2.4rem);
-  position:relative;overflow:hidden;transition:border-color .5s var(--ease),transform .5s var(--ease)}
-.soma-card:hover{border-color:var(--rose-soft);transform:translateY(-6px)}
-.soma-card .ic{width:42px;height:42px;margin-bottom:1.4rem;color:var(--rose-soft)}
-.soma-card h3{font-size:1.32rem;margin-bottom:.8rem;color:var(--paper)}
-.soma-card p{font-weight:300;font-size:.94rem;color:rgba(244,239,231,.74)}
-.soma-note{font-family:var(--display);font-style:italic;font-weight:340;font-size:clamp(1.3rem,2.6vw,2rem);
-  line-height:1.35;max-width:30ch;margin-top:clamp(2.6rem,5vw,4rem);color:var(--rose-soft)}
+.soma { background: var(--ink); color: var(--paper); position: relative; overflow: hidden; }
+.soma .glow {
+  position: absolute; width: 46vw; height: 46vw; border-radius: 50%;
+  background: rgba(184,106,120,.15); filter: blur(110px); top: 10%; left: -12%; z-index: 0;
+}
+.soma .wrap { position: relative; z-index: 2; }
+.soma .eyebrow { color: var(--rose-soft); } .soma .eyebrow::before { background: var(--rose-soft); }
+.soma h2 { font-size: clamp(2rem, 5vw, 4.2rem); max-width: 18ch; margin-bottom: 1.4rem; color: var(--paper); }
+.soma .lead {
+  font-weight: 300; color: rgba(244,239,231,.85); max-width: 60ch;
+  font-size: clamp(1.02rem, 1.5vw, 1.15rem); margin-bottom: clamp(3rem, 6vw, 4.5rem);
+}
+.soma-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1.3rem, 3vw, 2.4rem); }
+.soma-card {
+  border: 1px solid rgba(244,239,231,.12); border-radius: 14px; padding: clamp(1.8rem, 3vw, 2.4rem);
+  position: relative; overflow: hidden; transition: border-color .5s var(--ease), transform .5s var(--ease), background .5s;
+}
+.soma-card:hover { border-color: var(--rose-soft); transform: translateY(-6px); background: rgba(244,239,231,.03); }
+.soma-card .ic { width: 42px; height: 42px; margin-bottom: 1.6rem; color: var(--rose-soft); }
+.soma-card h3 { font-size: 1.35rem; margin-bottom: 1rem; color: var(--paper); }
+.soma-card p { font-weight: 300; font-size: .98rem; color: rgba(244,239,231,.75); }
+.soma-note {
+  font-family: var(--display); font-style: italic; font-weight: 340; font-size: clamp(1.4rem, 2.8vw, 2.2rem);
+  line-height: 1.35; max-width: 32ch; margin-top: clamp(3rem, 6vw, 4.5rem); color: var(--rose-soft);
+}
 
 /* ---------- PROCESS ---------- */
-.process h2{font-size:clamp(2rem,5vw,4rem);max-width:14ch;margin-bottom:clamp(2.5rem,5vw,4rem)}
-.proc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(1.2rem,2.5vw,2rem);position:relative}
-.proc-step{position:relative;padding-top:2.4rem}
-.proc-step::before{content:"";position:absolute;top:0;left:0;width:100%;height:1px;background:var(--mist)}
-.proc-step .dot{position:absolute;top:-5px;left:0;width:10px;height:10px;border-radius:50%;background:var(--rose)}
-.proc-num{font-size:.74rem;letter-spacing:.2em;color:var(--rose);margin-bottom:1rem}
-.proc-step h3{font-size:1.45rem;margin-bottom:.7rem}
-.proc-step p{font-weight:300;color:var(--ink-soft);font-size:.94rem}
+.process h2 { font-size: clamp(2rem, 5vw, 4rem); max-width: 14ch; margin-bottom: clamp(2.5rem, 5vw, 4rem); }
+.proc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(1.5rem, 3vw, 2.5rem); position: relative; }
+.proc-step { position: relative; padding-top: 2.4rem; }
+.proc-step::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 1px; background: var(--mist); }
+.proc-step .dot { position: absolute; top: -5px; left: 0; width: 10px; height: 10px; border-radius: 50%; background: var(--rose); }
+.proc-num { font-size: .74rem; letter-spacing: .2em; color: var(--rose); margin-bottom: 1rem; font-weight: 500; }
+.proc-step h3 { font-size: 1.45rem; margin-bottom: .7rem; color: var(--ink); }
+.proc-step p { font-weight: 300; color: var(--ink-soft); font-size: .98rem; }
 
 /* ---------- PHILOSOPHY ---------- */
-.philo{background:var(--sage);color:var(--paper)}
-.philo .eyebrow{color:var(--paper)}.philo .eyebrow::before{background:var(--paper)}
-.philo h2{font-size:clamp(2rem,5vw,4rem);max-width:16ch;margin-bottom:clamp(2.5rem,5vw,3.6rem);color:var(--paper)}
-.philo-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(1.3rem,3vw,2.2rem)}
-.philo-card{background:rgba(244,239,231,.1);border:1px solid rgba(244,239,231,.2);border-radius:14px;
-  padding:clamp(1.7rem,3vw,2.6rem);transition:background .5s var(--ease)}
-.philo-card:hover{background:rgba(244,239,231,.17)}
-.philo-card .pn{font-family:var(--display);font-style:italic;font-size:1.1rem;opacity:.7;margin-bottom:1rem}
-.philo-card h3{font-size:1.4rem;margin-bottom:.7rem;color:var(--paper)}
-.philo-card p{font-weight:300;font-size:.95rem;color:rgba(244,239,231,.85)}
+.philo { background: var(--sage); color: var(--paper); }
+.philo .eyebrow { color: var(--paper); } .philo .eyebrow::before { background: var(--paper); }
+.philo h2 { font-size: clamp(2rem, 5vw, 4rem); max-width: 16ch; margin-bottom: clamp(2.5rem, 5vw, 3.6rem); color: var(--paper); }
+.philo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(1.3rem, 3vw, 2.2rem); }
+.philo-card {
+  background: rgba(244,239,231,.08); border: 1px solid rgba(244,239,231,.15); border-radius: 14px;
+  padding: clamp(1.7rem, 3vw, 2.6rem); transition: background .5s var(--ease), transform .5s var(--ease);
+}
+.philo-card:hover { background: rgba(244,239,231,.14); transform: translateY(-3px); }
+.philo-card .pn { font-family: var(--display); font-style: italic; font-size: 1.2rem; opacity: .8; margin-bottom: 1.2rem; }
+.philo-card h3 { font-size: 1.45rem; margin-bottom: .8rem; color: var(--paper); }
+.philo-card p { font-weight: 300; font-size: 1rem; color: rgba(244,239,231,.9); }
 
 /* ---------- REVIEWS ---------- */
-.reviews{background:var(--paper-deep);overflow:hidden}
-.rev-top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:1.5rem;
-  margin-bottom:clamp(2.2rem,4vw,3.4rem)}
-.reviews h2{font-size:clamp(2rem,4.6vw,3.6rem);max-width:14ch}
-.rev-score{text-align:right}
-.rev-score .big{font-family:var(--display);font-size:clamp(2.6rem,6vw,4.4rem);color:var(--rose);line-height:1}
-.rev-score .stars{color:var(--clay);letter-spacing:.15em;margin:.3rem 0}
-.rev-score .src{font-size:.74rem;color:var(--ink-soft);letter-spacing:.04em}
-.rev-viewport{overflow:hidden}
-.rev-track{display:flex;gap:clamp(1.2rem,3vw,2rem);transition:transform .7s var(--ease)}
-.rev-card{flex:0 0 clamp(280px,80vw,440px);background:var(--paper);border:1px solid var(--mist);
-  border-radius:16px;padding:clamp(1.8rem,3vw,2.6rem);display:flex;flex-direction:column;gap:1.1rem}
-.rev-card .quote-m{font-family:var(--display);font-style:italic;font-size:2.6rem;color:var(--rose-soft);line-height:.5;height:1rem}
-.rev-card p{font-weight:300;color:var(--ink-soft);flex:1}
-.rev-card .who{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--mist);padding-top:1rem}
-.rev-card .who b{font-family:var(--display);font-weight:340;font-style:italic;font-size:1.1rem}
-.rev-card .who .when{font-size:.72rem;color:var(--ink-soft)}
-.rev-card .who .sc{font-size:.8rem;color:var(--rose);font-weight:500}
-.rev-ctrl{display:flex;gap:.7rem;margin-top:clamp(1.6rem,3vw,2.4rem);align-items:center}
-.rev-ctrl button{width:46px;height:46px;border:1px solid var(--ink);background:none;border-radius:50%;
-  cursor:pointer;color:var(--ink);display:flex;align-items:center;justify-content:center;transition:.4s var(--ease)}
-.rev-ctrl button:hover{background:var(--ink);color:var(--paper)}
-.rev-ctrl .more{margin-left:auto;font-size:.8rem;letter-spacing:.02em;border-bottom:1px solid var(--rose);
-  padding-bottom:2px;color:var(--ink-soft);transition:color .3s}
-.rev-ctrl .more:hover{color:var(--rose)}
-
-/* ---------- FAQ ---------- */
-.faq-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:clamp(2.5rem,6vw,6rem);align-items:start}
-.faq h2{font-size:clamp(2rem,5vw,3.6rem);max-width:11ch;position:sticky;top:7rem}
-.faq h2 .serif-i{color:var(--rose)}
-.faq-list{border-top:1px solid var(--mist)}
-.faq-item{border-bottom:1px solid var(--mist)}
-.faq-q{display:flex;justify-content:space-between;gap:1.5rem;align-items:center;cursor:pointer;
-  padding:1.5rem 0;font-family:var(--display);font-size:clamp(1.1rem,2vw,1.4rem);font-weight:340;transition:color .4s}
-.faq-q:hover{color:var(--rose)}
-.faq-q .ar{width:14px;height:14px;flex:none;position:relative;transition:transform .5s var(--ease)}
-.faq-q .ar::before,.faq-q .ar::after{content:"";position:absolute;background:var(--rose);transition:.5s}
-.faq-q .ar::before{top:50%;left:0;width:100%;height:1.5px;transform:translateY(-50%)}
-.faq-q .ar::after{left:50%;top:0;height:100%;width:1.5px;transform:translateX(-50%)}
-.faq-item.open .ar{transform:rotate(135deg)}
-.faq-a{max-height:0;overflow:hidden;transition:max-height .55s var(--ease)}
-.faq-a p{font-weight:300;color:var(--ink-soft);padding-bottom:1.5rem;max-width:58ch}
+.reviews { background: var(--paper-deep); overflow: hidden; }
+.rev-top {
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 1.5rem;
+  margin-bottom: clamp(2.5rem, 5vw, 4rem);
+}
+.reviews h2 { font-size: clamp(2rem, 4.6vw, 3.6rem); max-width: 14ch; }
+.rev-score { text-align: right; }
+.rev-score .big { font-family: var(--display); font-size: clamp(2.6rem, 6vw, 4.4rem); color: var(--rose); line-height: 1; }
+.rev-score .stars { color: var(--clay); letter-spacing: .15em; margin: .4rem 0; font-size: 1.2rem; }
+.rev-score .src { font-size: .78rem; color: var(--ink-soft); letter-spacing: .04em; font-weight: 500; }
+.rev-viewport { overflow: hidden; padding-bottom: 1rem; }
+.rev-track { display: flex; gap: clamp(1.2rem, 3vw, 2rem); transition: transform .7s var(--ease); }
+.rev-card {
+  flex: 0 0 clamp(280px, 80vw, 440px); background: var(--paper); border: 1px solid var(--mist);
+  border-radius: 16px; padding: clamp(2rem, 3.5vw, 2.8rem); display: flex; flex-direction: column; gap: 1.2rem;
+  box-shadow: 0 10px 30px rgba(28,46,46,.03);
+}
+.rev-card .quote-m { font-family: var(--display); font-style: italic; font-size: 3rem; color: var(--rose-soft); line-height: .5; height: 1rem; }
+.rev-card p { font-weight: 300; color: var(--ink-soft); flex: 1; font-size: 1.02rem; }
+.rev-card .who { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--mist); padding-top: 1.2rem; }
+.rev-card .who b { font-family: var(--display); font-weight: 340; font-style: italic; font-size: 1.15rem; }
+.rev-card .who .when { font-size: .75rem; color: var(--ink-soft); }
+.rev-card .who .sc { font-size: .85rem; color: var(--rose); font-weight: 600; }
+.rev-ctrl { display: flex; gap: .8rem; margin-top: clamp(1.6rem, 3vw, 2.4rem); align-items: center; }
+.rev-ctrl button {
+  width: 48px; height: 48px; border: 1px solid var(--ink); background: none; border-radius: 50%;
+  cursor: pointer; color: var(--ink); display: flex; align-items: center; justify-content: center; transition: .4s var(--ease);
+}
+.rev-ctrl button:hover { background: var(--ink); color: var(--paper); transform: scale(1.05); }
+.rev-ctrl .more {
+  margin-left: auto; font-size: .85rem; font-weight: 500; letter-spacing: .02em; border-bottom: 1px solid var(--rose);
+  padding-bottom: 2px; color: var(--ink-soft); transition: color .3s;
+}
+.rev-ctrl .more:hover { color: var(--rose); }
 
 /* ---------- CONTACT ---------- */
-.contact{background:var(--ink);color:var(--paper);position:relative;overflow:hidden}
-.contact .glow{position:absolute;width:50vw;height:50vw;border-radius:50%;background:rgba(125,146,133,.22);
-  filter:blur(120px);bottom:-20%;right:-12%}
-.contact .wrap{position:relative;z-index:2}
-.contact .eyebrow{color:var(--rose-soft)}.contact .eyebrow::before{background:var(--rose-soft)}
-.contact h2{font-size:clamp(2.3rem,6vw,5rem);max-width:13ch;margin-bottom:clamp(2.5rem,5vw,3.6rem);color:var(--paper)}
-.contact h2 .serif-i{color:var(--rose-soft)}
-.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,5vw,4rem);align-items:start}
-.cinfo{display:flex;flex-direction:column;gap:1.8rem}
-.cinfo .row .k{font-size:.7rem;letter-spacing:.24em;text-transform:uppercase;color:var(--rose-soft);margin-bottom:.5rem}
-.cinfo .row .v{font-family:var(--display);font-size:clamp(1.2rem,2.4vw,1.7rem);font-weight:340}
-.cinfo .row a.v{transition:color .4s}.cinfo .row a.v:hover{color:var(--rose-soft)}
-.contact-cta{display:inline-flex;align-items:center;gap:.7rem;background:var(--paper);color:var(--ink);
-  padding:1rem 1.8rem;border-radius:44px;font-size:.9rem;margin-top:.6rem;align-self:flex-start;
-  transition:transform .4s var(--ease),background .4s,color .4s}
-.contact-cta:hover{transform:translateY(-3px);background:var(--rose);color:var(--paper)}
-.map-frame{border-radius:16px;overflow:hidden;border:1px solid rgba(244,239,231,.2);height:100%;min-height:300px}
-.map-frame iframe{width:100%;height:100%;min-height:340px;border:0;filter:grayscale(.3) contrast(1.05)}
+.contact { background: var(--ink); color: var(--paper); position: relative; overflow: hidden; }
+.contact .glow {
+  position: absolute; width: 50vw; height: 50vw; border-radius: 50%; background: rgba(125,146,133,.20);
+  filter: blur(120px); bottom: -20%; right: -12%; pointer-events: none;
+}
+.contact .wrap { position: relative; z-index: 2; }
+.contact .eyebrow { color: var(--rose-soft); } .contact .eyebrow::before { background: var(--rose-soft); }
+.contact h2 { font-size: clamp(2.3rem, 6vw, 5rem); max-width: 13ch; margin-bottom: clamp(2.5rem, 5vw, 3.6rem); color: var(--paper); }
+.contact h2 .serif-i { color: var(--rose-soft); }
+.contact-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: clamp(3rem, 6vw, 5rem); align-items: start; }
+.cinfo { display: flex; flex-direction: column; gap: 2rem; }
+.cinfo .row .k { font-size: .75rem; letter-spacing: .24em; text-transform: uppercase; color: var(--rose-soft); margin-bottom: .6rem; }
+.cinfo .row .v { font-family: var(--display); font-size: clamp(1.3rem, 2.6vw, 1.8rem); font-weight: 340; line-height: 1.4; }
+.cinfo .row a.v { transition: color .4s; } .cinfo .row a.v:hover { color: var(--rose-soft); }
+.contact-cta {
+  display: inline-flex; align-items: center; gap: .8rem; background: var(--paper); color: var(--ink);
+  padding: 1.1rem 2rem; border-radius: 44px; font-size: .95rem; font-weight: 500; margin-top: 1rem; align-self: flex-start;
+  transition: transform .4s var(--ease), background .4s, color .4s;
+}
+.contact-cta:hover { transform: translateY(-3px); background: var(--rose); color: var(--paper); }
+.map-frame { border-radius: 16px; overflow: hidden; border: 1px solid rgba(244,239,231,.15); height: 100%; min-height: 380px; position: relative; z-index: 5; }
+.map-frame iframe { width: 100%; height: 100%; min-height: 380px; border: 0; filter: grayscale(.2) contrast(1.05); }
 
 /* ---------- FOOTER ---------- */
-footer{background:var(--ink);color:var(--paper);border-top:1px solid rgba(244,239,231,.14);
-  padding:clamp(2.2rem,4vw,3rem) var(--pad)}
-.foot-inner{max-width:1400px;margin:0 auto;display:flex;flex-wrap:wrap;gap:1.2rem;
-  justify-content:space-between;align-items:center}
-.foot-inner .fb{font-family:var(--display);font-style:italic;font-size:1.2rem;display:flex;align-items:center;gap:.5rem}
-.foot-inner .fb .psi{width:1.6rem;height:1.6rem;border:1px solid currentColor;border-radius:50%;
-  display:inline-flex;align-items:center;justify-content:center;font-size:.85rem}
-.foot-meta{font-size:.76rem;color:rgba(244,239,231,.6);letter-spacing:.03em}
-.foot-credit a{color:var(--rose-soft);border-bottom:1px solid transparent;transition:border-color .3s}
-.foot-credit a:hover{border-color:var(--rose-soft)}
+footer {
+  background: var(--ink); color: var(--paper); border-top: 1px solid rgba(244,239,231,.10);
+  padding: clamp(2.5rem, 5vw, 3.5rem) var(--pad);
+}
+.foot-inner { max-width: 1400px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: space-between; align-items: center; }
+.foot-inner .fb { font-family: var(--display); font-style: italic; font-size: 1.3rem; display: flex; align-items: center; gap: .6rem; }
+.foot-inner .fb .psi {
+  width: 1.8rem; height: 1.8rem; border: 1px solid currentColor; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center; font-size: .95rem;
+}
+.foot-meta { font-size: .8rem; color: rgba(244,239,231,.6); letter-spacing: .03em; }
+.foot-credit a { color: var(--rose-soft); border-bottom: 1px solid transparent; transition: border-color .3s; }
+.foot-credit a:hover { border-color: var(--rose-soft); }
 
 /* ---------- RESPONSIVE ---------- */
-@media(max-width:900px){
-  .nav-links{display:none}
-  .nav-toggle{display:block}
-  .lang-toggle.desktop{display:none}
-  .about-grid,.svc-body-inner,.faq-grid,.contact-grid{grid-template-columns:1fr}
-  .faq h2{position:static}
-  .soma-grid{grid-template-columns:1fr}
-  .proc-grid{grid-template-columns:1fr 1fr}
-  .philo-grid{grid-template-columns:1fr}
-  .about-portrait .frame{aspect-ratio:3/3.4;max-width:420px;margin:0 auto}
-  .map-frame{min-height:300px;order:2}
+@media(max-width: 900px) {
+  .nav-links { display: none; }
+  .nav-toggle { display: block; }
+  .lang-toggle.desktop { display: none; }
+  .about-grid, .contact-grid { grid-template-columns: 1fr; }
+  .soma-grid { grid-template-columns: 1fr; }
+  .proc-grid { grid-template-columns: 1fr 1fr; }
+  .philo-grid { grid-template-columns: 1fr; }
+  .about-portrait .frame { aspect-ratio: 3/3.4; max-width: 440px; margin: 0 auto; }
+  .map-frame { min-height: 320px; order: 2; margin-top: 1rem; }
 }
-@media(max-width:560px){
-  .proc-grid{grid-template-columns:1fr}
-  .rev-top{align-items:flex-start}
-  .rev-score{text-align:left}
-  .svc-head{grid-template-columns:auto 1fr auto;gap:.9rem}
+@media(max-width: 560px) {
+  .proc-grid { grid-template-columns: 1fr; }
+  .rev-top { align-items: flex-start; flex-direction: column; }
+  .rev-score { text-align: left; }
 }
-@media(prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;
-    transition-duration:.01ms!important;scroll-behavior:auto!important}
-  .hero h1 .ln>span,#loader .load-mark span{transform:none}
-  .reveal{opacity:1;transform:none}
-  .hero-thread path{stroke-dashoffset:0}
+@media(prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms!important; animation-iteration-count: 1!important; transition-duration: .01ms!important; scroll-behavior: auto!important; }
+  .hero h1 .ln > span, #loader .load-mark span { transform: none; }
+  .reveal { opacity: 1; transform: none; }
+  .hero-thread path { stroke-dashoffset: 0; }
 }
+
 /* language visibility */
-[data-lang]{display:none}
-body.lang-el [data-lang="el"]{display:revert}
-body.lang-en [data-lang="en"]{display:revert}
-/* brand & tag sublabels render inline-block when active */
-.brand small[data-lang],.about-portrait .tag span[data-lang]{display:none}
-body.lang-el .brand small[data-lang="el"],body.lang-en .brand small[data-lang="en"]{display:block}
-body.lang-el .about-portrait .tag span[data-lang="el"],body.lang-en .about-portrait .tag span[data-lang="en"]{display:inline}
-.svc-tags span[data-lang],.hero h1 .ln>span[data-lang]{display:none}
-body.lang-el .hero h1 .ln>span[data-lang="el"]{display:block}
-body.lang-en .hero h1 .ln>span[data-lang="en"]{display:block}
-body.lang-el .svc-tags span[data-lang="el"]{display:inline-block}
-body.lang-en .svc-tags span[data-lang="en"]{display:inline-block}
-/* once hero animation has run, keep any toggled-in line visible */
-body.hero-shown .hero h1 .ln>span{transform:translateY(0)!important;animation:none!important}
+[data-lang] { display: none; }
+body.lang-el [data-lang="el"] { display: revert; }
+body.lang-en [data-lang="en"] { display: revert; }
+.brand small[data-lang], .about-portrait .tag span[data-lang] { display: none; }
+body.lang-el .brand small[data-lang="el"], body.lang-en .brand small[data-lang="en"] { display: block; }
+body.lang-el .about-portrait .tag span[data-lang="el"], body.lang-en .about-portrait .tag span[data-lang="en"] { display: inline; }
+.svc-tags span[data-lang], .hero h1 .ln > span[data-lang] { display: none; }
+body.lang-el .hero h1 .ln > span[data-lang="el"] { display: block; }
+body.lang-en .hero h1 .ln > span[data-lang="en"] { display: block; }
+body.lang-el .svc-tags span[data-lang="el"] { display: inline-block; }
+body.lang-en .svc-tags span[data-lang="en"] { display: inline-block; }
+body.hero-shown .hero h1 .ln > span { transform: translateY(0)!important; animation: none!important; }
 </style>
 </head>
 <body class="lang-el hero-mode">
 
-<!-- ============ LOADER ============ -->
+<div id="lightbox" aria-hidden="true" role="dialog" aria-modal="true">
+  <button class="lb-close" aria-label="Κλείσιμο">&times;</button>
+  <img src="" alt="Προβολή εικόνας">
+</div>
+
 <div id="loader" aria-hidden="true">
-  <div class="load-mark"><span>Χ</span><span>.</span><span>Π</span></div>
-  <div class="load-line"></div>
+  <div class="load-mark"><span>Ψ</span></div>
   <div class="load-sub" data-lang="el">Ψυχοθεραπεία · Μυτιλήνη</div>
   <div class="load-sub" data-lang="en">Psychotherapy · Mytilene</div>
 </div>
 
-<!-- ============ NAV ============ -->
 <header id="header">
   <a href="#top" class="brand" aria-label="Χριστίνα Πατρίδου — αρχική">
     <span class="psi">Ψ</span>
@@ -407,8 +489,7 @@ body.hero-shown .hero h1 .ln>span{transform:translateY(0)!important;animation:no
     <div class="nav-links">
       <a href="#about" data-lang="el">Προφίλ</a><a href="#about" data-lang="en">About</a>
       <a href="#services" data-lang="el">Υπηρεσίες</a><a href="#services" data-lang="en">Services</a>
-      <a href="#process" data-lang="el">Διαδικασία</a><a href="#process" data-lang="en">Process</a>
-      <a href="#faq" data-lang="el">Ερωτήσεις</a><a href="#faq" data-lang="en">FAQ</a>
+      <a href="#process" data-lang="el">Διαδρομή</a><a href="#process" data-lang="en">Process</a>
       <div class="lang-toggle desktop">
         <button data-set="el" class="active">EL</button><span>/</span><button data-set="en">EN</button>
       </div>
@@ -421,27 +502,24 @@ body.hero-shown .hero h1 .ln>span{transform:translateY(0)!important;animation:no
   </nav>
 </header>
 
-<!-- ============ MOBILE MENU ============ -->
 <div class="mobile-menu" id="mobileMenu">
+  <button class="mobile-close" id="mobileClose" aria-label="Κλείσιμο">&times;</button>
   <a href="#about" data-lang="el">Προφίλ</a><a href="#about" data-lang="en">About</a>
   <a href="#services" data-lang="el">Υπηρεσίες</a><a href="#services" data-lang="en">Services</a>
-  <a href="#process" data-lang="el">Διαδικασία</a><a href="#process" data-lang="en">Process</a>
-  <a href="#faq" data-lang="el">Ερωτήσεις</a><a href="#faq" data-lang="en">FAQ</a>
+  <a href="#process" data-lang="el">Διαδρομή</a><a href="#process" data-lang="en">Process</a>
   <a href="#contact" data-lang="el">Επικοινωνία</a><a href="#contact" data-lang="en">Contact</a>
-  <div class="lang-toggle" style="margin-top:1.6rem">
-    <button data-set="el" class="active" style="color:var(--paper)">EL</button>
-    <span style="color:var(--rose-soft)">/</span>
-    <button data-set="en" style="color:var(--paper)">EN</button>
+  <div class="lang-toggle" style="margin-top:2rem">
+    <button data-set="el" class="active" style="color:var(--paper); font-size: 1rem;">EL</button>
+    <span style="color:var(--rose-soft); font-size: 1rem;">/</span>
+    <button data-set="en" style="color:var(--paper); font-size: 1rem;">EN</button>
   </div>
   <div class="mm-foot">Γυμνασιάρχου Ολυμπίου 2, Μυτιλήνη</div>
 </div>
 
-<!-- ============ HERO ============ -->
 <main id="top">
 <section class="hero">
   <div class="hero-glow a"></div>
   <div class="hero-glow b"></div>
-  <!-- signature: a single continuous thread tracing the patterns we follow -->
   <svg class="hero-thread" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
     <path d="M-40,150 C260,60 360,360 600,330 C840,300 820,560 1080,520 C1300,486 1240,700 1480,640"/>
     <path d="M-40,420 C300,520 280,760 560,720 C900,672 880,860 1200,800 C1360,770 1380,900 1500,880" style="opacity:.35"/>
@@ -456,11 +534,11 @@ body.hero-shown .hero h1 .ln>span{transform:translateY(0)!important;animation:no
       <span class="ln"><span data-lang="el">στον <em class="serif-i">εαυτό</em></span><span data-lang="en">to the <em class="serif-i">self</em></span></span>
     </h1>
     <div class="hero-foot">
-      <p data-lang="el">Ψυχοθεραπεία που δεν κυνηγά γρήγορες λύσεις — αναγνωρίζει τα μοτίβα που σας εγκλωβίζουν και σας δίνει τα εργαλεία να τα αλλάξετε, με σεβασμό στον δικό σας ρυθμό.</p>
-      <p data-lang="en">Therapy that doesn't chase quick fixes — it recognises the patterns that keep you stuck and gives you the tools to change them, at your own pace.</p>
+      <p data-lang="el">Η ψυχοθεραπεία δεν είναι κυνήγι γρήγορων λύσεων. Είναι η αναγνώριση των μοτίβων που σας εγκλωβίζουν και η εύρεση των κατάλληλων εργαλείων για να τα αλλάξετε, με απόλυτο σεβασμό στον δικό σας ρυθμό.</p>
+      <p data-lang="en">Therapy isn't about chasing quick fixes. It’s about recognising the patterns that keep you stuck and finding the right tools to change them, with absolute respect for your own pace.</p>
       <a href="#contact" class="hero-cta">
-        <span data-lang="el">Κλείστε ραντεβού</span><span data-lang="en">Book a session</span>
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 11L11 3M11 3H4M11 3V10"/></svg>
+        <span data-lang="el">Συζητήστε μαζί μας</span><span data-lang="en">Book a session</span>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11L11 3M11 3H4M11 3V10"/></svg>
       </a>
     </div>
   </div>
@@ -468,17 +546,15 @@ body.hero-shown .hero h1 .ln>span{transform:translateY(0)!important;animation:no
 </section>
 </main>
 
-<!-- ============ MARQUEE ============ -->
 <div class="marquee" aria-hidden="true">
   <div class="marquee-track">
-    <span data-lang="el">Άγχος &amp; Κρίσεις Πανικού</span><span data-lang="el">Αυτογνωσία</span><span data-lang="el">Γυναικεία Ενδυνάμωση</span><span data-lang="el">Διαπροσωπικές Σχέσεις</span><span data-lang="el">Online Συνεδρίες</span><span data-lang="el">Ψυχοσωματική Υγεία</span>
-    <span data-lang="el">Άγχος &amp; Κρίσεις Πανικού</span><span data-lang="el">Αυτογνωσία</span><span data-lang="el">Γυναικεία Ενδυνάμωση</span><span data-lang="el">Διαπροσωπικές Σχέσεις</span><span data-lang="el">Online Συνεδρίες</span><span data-lang="el">Ψυχοσωματική Υγεία</span>
-    <span data-lang="en">Anxiety &amp; Panic</span><span data-lang="en">Self-awareness</span><span data-lang="en">Women's Empowerment</span><span data-lang="en">Relationships</span><span data-lang="en">Online Sessions</span><span data-lang="en">Psychosomatic Health</span>
-    <span data-lang="en">Anxiety &amp; Panic</span><span data-lang="en">Self-awareness</span><span data-lang="en">Women's Empowerment</span><span data-lang="en">Relationships</span><span data-lang="en">Online Sessions</span><span data-lang="en">Psychosomatic Health</span>
+    <span data-lang="el">Άγχος & Κρίσεις Πανικού</span><span data-lang="el">Αυτογνωσία</span><span data-lang="el">Γυναικεία Ενδυνάμωση</span><span data-lang="el">Διαπροσωπικές Σχέσεις</span><span data-lang="el">Online Συνεδρίες</span><span data-lang="el">Ψυχοσωματική Υγεία</span>
+    <span data-lang="el">Άγχος & Κρίσεις Πανικού</span><span data-lang="el">Αυτογνωσία</span><span data-lang="el">Γυναικεία Ενδυνάμωση</span><span data-lang="el">Διαπροσωπικές Σχέσεις</span><span data-lang="el">Online Συνεδρίες</span><span data-lang="el">Ψυχοσωματική Υγεία</span>
+    <span data-lang="en">Anxiety & Panic</span><span data-lang="en">Self-awareness</span><span data-lang="en">Women's Empowerment</span><span data-lang="en">Relationships</span><span data-lang="en">Online Sessions</span><span data-lang="en">Psychosomatic Health</span>
+    <span data-lang="en">Anxiety & Panic</span><span data-lang="en">Self-awareness</span><span data-lang="en">Women's Empowerment</span><span data-lang="en">Relationships</span><span data-lang="en">Online Sessions</span><span data-lang="en">Psychosomatic Health</span>
   </div>
 </div>
 
-<!-- ============ ABOUT ============ -->
 <section class="about" id="about">
   <div class="wrap about-grid">
     <div class="about-portrait reveal">
@@ -497,17 +573,17 @@ body.hero-shown .hero h1 .ln>span{transform:translateY(0)!important;animation:no
     <div>
       <div class="eyebrow reveal"><span data-lang="el">Το προφίλ</span><span data-lang="en">The profile</span></div>
       <h2 class="reveal d1">
-        <span data-lang="el">Ένας χώρος ασφάλειας, χωρίς φόβο κριτικής</span>
-        <span data-lang="en">A space of safety, free of judgement</span>
+        <span data-lang="el">Ένας χώρος ασφάλειας, χωρίς τον φόβο της κριτικής</span>
+        <span data-lang="en">A space of safety, free from judgment</span>
       </h2>
-      <p class="reveal d1" data-lang="el">Η Χριστίνα Πατρίδου (MSc) είναι αδειούχος ψυχολόγος και ψυχοθεραπεύτρια με έδρα τη Μυτιλήνη, απόφοιτη του Τμήματος Ψυχολογίας του ΑΠΘ με μεταπτυχιακή εξειδίκευση στη Συμβουλευτική Ψυχοσωματικής Υγείας. Η κύρια θεραπευτική της κατεύθυνση είναι το Γνωστικό Αναλυτικό Μοντέλο (CAT) — μια ολοκληρωμένη προσέγγιση που συνδυάζει γνωσιακά και αναλυτικά εργαλεία για την κατανόηση των βαθύτερων μοτίβων της συμπεριφοράς και των σχέσεων.</p>
-      <p class="reveal d1" data-lang="en">Christina Patridou (MSc) is a licensed psychologist and psychotherapist based in Mytilene, a graduate of the Psychology Department of Aristotle University of Thessaloniki with a master's specialisation in Psychosomatic Health Counselling. Her primary therapeutic approach is the Cognitive Analytic Model (CAT) — an integrative method combining cognitive and analytic tools to understand the deeper patterns of behaviour and relationships.</p>
-      <p class="reveal d2" data-lang="el">Με σημαντική εμπειρία σε ιδιωτικά θεραπευτικά πλαίσια και σε συνεργασία με οργανισμούς κοινωνικής ένταξης, υποστηρίζει άτομα με ποικίλες ψυχολογικές προκλήσεις. Η πρακτική της εστιάζει στη δημιουργία ενός χώρου απόλυτης ασφάλειας και αποδοχής, όπου ο θεραπευόμενος μπορεί να εκφραστεί ανοιχτά.</p>
-      <p class="reveal d2" data-lang="en">With substantial experience in private practice and in collaboration with social-inclusion organisations, she supports people facing a wide range of psychological challenges. Her practice centres on creating a space of complete safety and acceptance, where the client can express themselves openly.</p>
-      <blockquote class="pullquote reveal d2" data-lang="el">«Στόχος δεν είναι μόνο η διαχείριση των συμπτωμάτων, αλλά η ουσιαστική ενίσχυση της αυτογνωσίας.»</blockquote>
-      <blockquote class="pullquote reveal d2" data-lang="en">"The goal is not only to manage symptoms, but to meaningfully strengthen self-awareness."</blockquote>
-      <p class="reveal d3" data-lang="el">Πιστεύοντας ακράδαντα στη διαρκή επαγγελματική εξέλιξη, παρακολουθεί ανελλιπώς σεμινάρια, εκπαιδεύσεις και εποπτείες, ενισχύοντας συνεχώς τα επιστημονικά της εργαλεία — με στόχο σταθερές, μόνιμες αλλαγές που βελτιώνουν την ποιότητα ζωής, με απόλυτο σεβασμό στον προσωπικό ρυθμό κάθε ατόμου.</p>
-      <p class="reveal d3" data-lang="en">Firmly believing in continuous professional development, she consistently attends seminars, trainings and supervisions, steadily expanding her scientific toolkit — aiming for stable, lasting changes that improve quality of life, with full respect for each person's own pace.</p>
+      <p class="reveal d1" data-lang="el">Η Χριστίνα Πατρίδου (MSc) είναι αδειούχος ψυχολόγος και ψυχοθεραπεύτρια με έδρα τη Μυτιλήνη, απόφοιτη του Τμήματος Ψυχολογίας του Αριστοτελείου Πανεπιστημίου Θεσσαλονίκης με μεταπτυχιακή εξειδίκευση στη Συμβουλευτική Ψυχοσωματικής Υγείας. Η θεραπευτική της προσέγγιση στηρίζεται στο Γνωστικό Αναλυτικό Μοντέλο (CAT) — μια σύγχρονη και συνθετική μέθοδο που ενώνει γνωσιακά και αναλυτικά εργαλεία, εστιάζοντας στην κατανόηση των βαθύτερων μοτίβων των σχέσεων και της συμπεριφοράς.</p>
+      <p class="reveal d1" data-lang="en">Christina Patridou (MSc) is a licensed psychologist and psychotherapist based in Mytilene, a graduate of the Psychology Department of Aristotle University of Thessaloniki with a master's specialization in Psychosomatic Health Counselling. Her primary therapeutic approach is the Cognitive Analytic Model (CAT) — a modern, integrative method combining cognitive and analytic tools to understand the deeper patterns of behaviour and relationships.</p>
+      <p class="reveal d2" data-lang="el">Μέσα από πολυετή εμπειρία τόσο σε ιδιωτικό επίπεδο όσο και σε οργανισμούς κοινωνικής υποστήριξης, έχει καλλιεργήσει μια πρακτική που βάζει τον άνθρωπο στο κέντρο. Δημιουργεί ένα αυστηρά προστατευμένο, ασφαλές περιβάλλον αποδοχής, επιτρέποντας στον θεραπευόμενο να εκφραστεί ανοιχτά και με ειλικρίνεια.</p>
+      <p class="reveal d2" data-lang="en">Through years of experience in both private practice and social support organizations, she has cultivated a strictly person-centered practice. She creates a deeply protected, safe environment of acceptance, allowing the client to express themselves openly and honestly.</p>
+      <blockquote class="pullquote reveal d2" data-lang="el">«Ο στόχος μας δεν περιορίζεται στη διαχείριση του συμπτώματος, αλλά στην ουσιαστική και βαθιά ενίσχυση της αυτογνωσίας.»</blockquote>
+      <blockquote class="pullquote reveal d2" data-lang="en">"Our goal isn't just symptom management, but the profound and essential strengthening of self-awareness."</blockquote>
+      <p class="reveal d3" data-lang="el">Πιστεύοντας ακράδαντα στη δύναμη της διαρκούς εξέλιξης, ενημερώνεται συνεχώς μέσα από εξειδικευμένες εκπαιδεύσεις και εποπτείες. Σκοπός της δεν είναι η προσωρινή ανακούφιση, αλλά η καθοδήγηση προς σταθερές, ριζικές αλλαγές που αναβαθμίζουν την ποιότητα ζωής του θεραπευόμενου.</p>
+      <p class="reveal d3" data-lang="en">Firmly believing in the power of continuous development, she steadily expands her scientific toolkit through specialized training and supervision. Her aim is not temporary relief, but guiding clients towards stable, deeply rooted changes that elevate their quality of life.</p>
       <div class="cred-row reveal d3">
         <div><div class="n">CAT</div><div class="l" data-lang="el">Γνωστικό Αναλυτικό Μοντέλο</div><div class="l" data-lang="en">Cognitive Analytic Model</div></div>
         <div><div class="n">ΑΠΘ</div><div class="l" data-lang="el">Τμήμα Ψυχολογίας</div><div class="l" data-lang="en">Psychology, AUTh</div></div>
@@ -517,209 +593,191 @@ body.hero-shown .hero h1 .ln>span{transform:translateY(0)!important;animation:no
   </div>
 </section>
 
-<!-- ============ SERVICES ============ -->
 <section class="services" id="services">
   <div class="wrap">
-    <div class="eyebrow reveal"><span data-lang="el">Υπηρεσίες</span><span data-lang="en">Services</span></div>
+    <div class="eyebrow reveal"><span data-lang="el">Οι Υπηρεσίες</span><span data-lang="en">Services</span></div>
     <h2 class="reveal d1">
       <span data-lang="el">Πώς δουλεύουμε <em class="serif-i">μαζί</em></span>
       <span data-lang="en">How we <em class="serif-i">work</em> together</span>
     </h2>
-    <p class="intro reveal d1" data-lang="el">Όλες οι συνεδρίες διαρκούν 45 λεπτά και προσαρμόζονται στις δικές σας ανάγκες. Επιλέξτε μια κατηγορία για να δείτε τι περιλαμβάνει.</p>
-    <p class="intro reveal d1" data-lang="en">All sessions last 45 minutes and adapt to your needs. Open a category to see what it includes.</p>
+    <p class="intro reveal d1" data-lang="el">Η θεραπεία δεν είναι μια τυποποιημένη διαδικασία. Όλες οι συνεδρίες διαρκούν 45 λεπτά και προσαρμόζονται πλήρως στις δικές σας μοναδικές ανάγκες, αναδεικνύοντας τις πτυχές που ζητούν φροντίδα.</p>
+    <p class="intro reveal d1" data-lang="en">Therapy isn't a standardized procedure. All sessions last 45 minutes and adapt fully to your unique needs, shedding light on the areas that require care.</p>
 
-    <div class="svc-list reveal d2">
-      <!-- 1 -->
-      <div class="svc">
-        <div class="svc-head">
+    <div class="svc-thread-container" id="svcThread">
+      <div class="svc-line"></div>
+      <div class="svc-line-progress" id="svcProgress"></div>
+      
+      <div class="svc-item reveal">
+        <div class="svc-node"></div>
+        <div class="svc-content">
           <span class="svc-num">01</span>
           <h3 class="svc-title"><span data-lang="el">Γνωστική Αναλυτική Ψυχοθεραπεία (CAT)</span><span data-lang="en">Cognitive Analytic Therapy (CAT)</span></h3>
-          <span class="svc-plus" aria-hidden="true"></span>
-        </div>
-        <div class="svc-body"><div class="svc-body-inner">
-          <p data-lang="el">Το Γνωστικό Αναλυτικό Μοντέλο σας βοηθά να αναγνωρίσετε τα επαναλαμβανόμενα μοτίβα που σας εγκλωβίζουν. Στις ατομικές συνεδρίες συνεργαζόμαστε για να κατανοήσουμε πώς οι εμπειρίες του παρελθόντος διαμορφώνουν τις σημερινές δυσκολίες — μια διαδικασία «συνεργατικής ανακάλυψης», όπου αποκτάτε τα εργαλεία για να αλλάξετε τον τρόπο που σκέφτεστε και σχετίζεστε.</p>
-          <p data-lang="en">The Cognitive Analytic Model helps you recognise the recurring patterns that keep you stuck. In individual sessions we work to understand how past experiences shape today's difficulties — a process of "collaborative discovery" in which you gain the tools to change how you think and relate.</p>
+          <p data-lang="el">Το Γνωστικό Αναλυτικό Μοντέλο λειτουργεί ως ένας καθρέφτης, βοηθώντας σας να αναγνωρίσετε τα επαναλαμβανόμενα, συχνά αόρατα μοτίβα που σας κρατούν στάσιμους. Μέσα από έναν ασφαλή διάλογο, αποκωδικοποιούμε πώς οι εμπειρίες του παρελθόντος έχουν σκιαγραφήσει τις σημερινές σας δυσκολίες, δίνοντάς σας πρακτικά εργαλεία για να αλλάξετε τον τρόπο που σχετίζεστε με τον εαυτό σας και τους άλλους.</p>
+          <p data-lang="en">The Cognitive Analytic Model acts as a mirror, helping you recognize the recurring, often invisible patterns that keep you stagnant. Through a safe dialogue, we decode how past experiences have outlined today's difficulties, giving you practical tools to change the way you relate to yourself and others.</p>
           <div class="svc-tags">
-            <span data-lang="el">Ατομικές συνεδρίες ενηλίκων · 45′</span><span data-lang="en">Individual adult sessions · 45′</span>
-            <span data-lang="el">Ψυχοθεραπεία ενηλίκων · 45′</span><span data-lang="en">Adult psychotherapy · 45′</span>
-            <span data-lang="el">Απλή συνεδρία · 45′</span><span data-lang="en">Single session · 45′</span>
+            <span data-lang="el">Ατομικές συνεδρίες ενηλίκων</span><span data-lang="en">Individual adult sessions</span>
+            <span data-lang="el">Συνεργατική ανακάλυψη</span><span data-lang="en">Collaborative discovery</span>
           </div>
-        </div></div>
+        </div>
       </div>
-      <!-- 2 -->
-      <div class="svc">
-        <div class="svc-head">
+      <div class="svc-item reveal">
+        <div class="svc-node"></div>
+        <div class="svc-content">
           <span class="svc-num">02</span>
-          <h3 class="svc-title"><span data-lang="el">Άγχος, Πανικός &amp; Διαχείριση Φοβιών</span><span data-lang="en">Anxiety, Panic &amp; Phobias</span></h3>
-          <span class="svc-plus" aria-hidden="true"></span>
-        </div>
-        <div class="svc-body"><div class="svc-body-inner">
-          <p data-lang="el">Το άγχος δεν είναι απλώς μια «ανησυχία» — μπορεί να επηρεάσει την καθημερινότητα, τον ύπνο και τη σωματική σας υγεία. Μαζί διερευνούμε την καταγωγή του και εφαρμόζουμε τεχνικές για τη διαχείριση των κρίσεων πανικού και των φοβιών, βοηθώντας το νευρικό σας σύστημα να ηρεμήσει και να ανακτήσετε την αίσθηση ασφάλειας.</p>
-          <p data-lang="en">Anxiety isn't simply "worry" — it can affect your daily life, sleep and physical health. Together we explore its origins and apply techniques to manage panic attacks and phobias, helping your nervous system settle and your sense of safety return.</p>
+          <h3 class="svc-title"><span data-lang="el">Άγχος, Πανικός & Διαχείριση Φοβιών</span><span data-lang="en">Anxiety, Panic & Phobias</span></h3>
+          <p data-lang="el">Το παρατεταμένο άγχος διαβρώνει σταδιακά την καθημερινότητα, εξαντλώντας τόσο το νου όσο και το σώμα. Στις συνεδρίες μας διερευνούμε τη ρίζα των συμπτωμάτων. Μαθαίνουμε να αποκωδικοποιούμε τις κρίσεις πανικού και τις φοβίες όχι ως απειλές, αλλά ως σήματα του νευρικού συστήματος, εφαρμόζοντας τεχνικές που επαναφέρουν την ισορροπία και το αίσθημα της ασφάλειας.</p>
+          <p data-lang="en">Prolonged anxiety gradually erodes daily life, exhausting both mind and body. In our sessions we explore the root of the symptoms. We learn to decode panic attacks and phobias not as threats, but as signals from the nervous system, applying techniques that restore balance and a sense of safety.</p>
           <div class="svc-tags">
-            <span data-lang="el">Διαχείριση άγχους &amp; στρες · 45′</span><span data-lang="en">Anxiety &amp; stress · 45′</span>
-            <span data-lang="el">Διαχείριση κρίσεων πανικού · 45′</span><span data-lang="en">Panic attacks · 45′</span>
-            <span data-lang="el">Αντιμετώπιση φοβιών · 45′</span><span data-lang="en">Phobias · 45′</span>
+            <span data-lang="el">Αποκλιμάκωση στρες</span><span data-lang="en">Stress de-escalation</span>
+            <span data-lang="el">Ρύθμιση νευρικού συστήματος</span><span data-lang="en">Nervous system regulation</span>
           </div>
-        </div></div>
+        </div>
       </div>
-      <!-- 3 -->
-      <div class="svc">
-        <div class="svc-head">
+      <div class="svc-item reveal">
+        <div class="svc-node"></div>
+        <div class="svc-content">
           <span class="svc-num">03</span>
-          <h3 class="svc-title"><span data-lang="el">Αυτογνωσία, Ενδυνάμωση &amp; Σχέσεις</span><span data-lang="en">Self-awareness, Empowerment &amp; Relationships</span></h3>
-          <span class="svc-plus" aria-hidden="true"></span>
-        </div>
-        <div class="svc-body"><div class="svc-body-inner">
-          <p data-lang="el">Η σχέση με τον εαυτό μας είναι η βάση όλων των άλλων σχέσεων. Εστιάζουμε στη βελτίωση της αυτοεικόνας και την ενίσχυση της αυτοεκτίμησης — ειδικά σε θέματα γυναικείας ενδυνάμωσης. Παράλληλα διερευνούμε τα ζητήματα των σχέσεών σας, ώστε να επικοινωνείτε πιο αποτελεσματικά, να θέτετε υγιή όρια και να νιώθετε μεγαλύτερη ικανοποίηση.</p>
-          <p data-lang="en">Our relationship with ourselves is the foundation of every other relationship. We focus on improving self-image and strengthening self-esteem — especially around women's empowerment. We also explore your relationships, so you can communicate more effectively, set healthy boundaries and feel more fulfilled.</p>
+          <h3 class="svc-title"><span data-lang="el">Αυτογνωσία, Ενδυνάμωση & Σχέσεις</span><span data-lang="en">Self-awareness, Empowerment & Relationships</span></h3>
+          <p data-lang="el">Όλα ξεκινούν από τη σχέση που έχουμε με τον εαυτό μας. Εστιάζουμε στη βαθιά κατανόηση της προσωπικής σας αξίας, την επαναδόμηση της αυτοεκτίμησης και την τοποθέτηση υγιών ορίων. Ιδιαίτερη έμφαση δίνεται στη γυναικεία ενδυνάμωση, βοηθώντας σας να ανακτήσετε τη φωνή σας και να διαχειριστείτε απαιτητικές διαπροσωπικές δυναμικές ή συναισθηματικές μεταβάσεις.</p>
+          <p data-lang="en">Everything stems from the relationship we have with ourselves. We focus on deeply understanding your personal worth, rebuilding self-esteem and establishing healthy boundaries. Special emphasis is placed on women's empowerment, helping you reclaim your voice and navigate demanding interpersonal dynamics or emotional transitions.</p>
           <div class="svc-tags">
-            <span data-lang="el">Βελτίωση αυτοεκτίμησης · 45′</span><span data-lang="en">Self-esteem · 45′</span>
-            <span data-lang="el">Γυναικεία ενδυνάμωση · 45′</span><span data-lang="en">Women's empowerment · 45′</span>
-            <span data-lang="el">Συμβουλευτική σχέσεων · 45′</span><span data-lang="en">Relationship counselling · 45′</span>
-            <span data-lang="el">Αντιμετώπιση θλίψης · 45′</span><span data-lang="en">Coping with grief · 45′</span>
+            <span data-lang="el">Γυναικεία ενδυνάμωση</span><span data-lang="en">Women's empowerment</span>
+            <span data-lang="el">Υγιή όρια & επικοινωνία</span><span data-lang="en">Healthy boundaries & communication</span>
           </div>
-        </div></div>
+        </div>
       </div>
-      <!-- 4 -->
-      <div class="svc">
-        <div class="svc-head">
+      <div class="svc-item reveal">
+        <div class="svc-node"></div>
+        <div class="svc-content">
           <span class="svc-num">04</span>
-          <h3 class="svc-title"><span data-lang="el">Διαδικτυακή Ψυχοθεραπεία &amp; Προσιτή Φροντίδα</span><span data-lang="en">Online Therapy &amp; Accessible Care</span></h3>
-          <span class="svc-plus" aria-hidden="true"></span>
-        </div>
-        <div class="svc-body"><div class="svc-body-inner">
-          <p data-lang="el">Η ποιότητα της ψυχοθεραπείας δεν περιορίζεται από τον φυσικό χώρο. Παρέχονται online συνεδρίες μέσω βιντεοκλήσης με την ίδια εχεμύθεια και επιστημονική συνέπεια που διέπουν τις δια ζώσης συναντήσεις. Αναγνωρίζοντας τις κοινωνικές ανάγκες της εποχής, παρέχεται ειδικό, προνομιακό κόστος συνεδρίας για ανέργους και φοιτητές.</p>
-          <p data-lang="en">The quality of therapy isn't bound to a physical room. Online sessions are offered by video call with the same confidentiality and scientific consistency as in-person meetings. Recognising the social needs of our time, a special, preferential session rate is available for the unemployed and for students.</p>
+          <h3 class="svc-title"><span data-lang="el">Διαδικτυακή Ψυχοθεραπεία & Προσιτή Φροντίδα</span><span data-lang="en">Online Therapy & Accessible Care</span></h3>
+          <p data-lang="el">Η θεραπευτική σύνδεση ξεπερνά τους φυσικούς περιορισμούς. Οι online συνεδρίες μας πραγματοποιούνται με τις ίδιες υψηλές προδιαγραφές εχεμύθειας και επιστημονικής αυστηρότητας με τις δια ζώσης. Επειδή η ψυχική υγεία είναι δικαίωμα και όχι πολυτέλεια, παρέχεται ειδικό, προνομιακό κόστος για φοιτητές και ανέργους, διασφαλίζοντας ισότιμη πρόσβαση στην υποστήριξη.</p>
+          <p data-lang="en">Therapeutic connection transcends physical boundaries. Our online sessions are conducted with the same high standards of confidentiality and clinical rigor as in-person ones. Because mental health is a right, not a luxury, a special, preferential rate is offered to students and the unemployed, ensuring equal access to support.</p>
           <div class="svc-tags">
-            <span data-lang="el">Συνεδρία μέσω βιντεοκλήσης · 45′</span><span data-lang="en">Video-call session · 45′</span>
-            <span data-lang="el">Ειδικό κόστος για ανέργους / φοιτητές</span><span data-lang="en">Special rate · unemployed / students</span>
+            <span data-lang="el">Online μέσω βιντεοκλήσης</span><span data-lang="en">Online via video call</span>
+            <span data-lang="el">Ειδικό τιμολόγιο για φοιτητές / ανέργους</span><span data-lang="en">Special rates for students / unemployed</span>
           </div>
-        </div></div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============ PSYCHOSOMATIC FEATURE ============ -->
 <section class="soma">
   <div class="glow"></div>
   <div class="wrap">
-    <div class="eyebrow reveal"><span data-lang="el">Ψυχοσωματική κατανόηση</span><span data-lang="en">A psychosomatic lens</span></div>
+    <div class="eyebrow reveal"><span data-lang="el">Ψυχοσωματική προσέγγιση</span><span data-lang="en">A psychosomatic lens</span></div>
     <h2 class="reveal d1">
       <span data-lang="el">Όταν το σώμα «μιλάει» για την ψυχή</span>
       <span data-lang="en">When the body speaks for the psyche</span>
     </h2>
-    <p class="lead reveal d1" data-lang="el">Πολλοί από εμάς ζούμε αποκομμένοι από το σώμα μας. Όταν νιώθουμε θλίψη ή παρατεταμένο στρες, τείνουμε να το «αποθηκεύουμε» κάπου βαθιά. Η εξειδίκευσή μου στη Συμβουλευτική Ψυχοσωματικής Υγείας με έχει διδάξει ότι το σώμα είναι συχνά ο πρώτος μάρτυρας της ψυχικής μας δυσφορίας.</p>
-    <p class="lead reveal d1" data-lang="en">Many of us live cut off from our bodies. When we feel sadness or prolonged stress, we tend to "store" it somewhere deep. My specialisation in Psychosomatic Health Counselling has taught me that the body is often the first witness to our psychological distress.</p>
+    <p class="lead reveal d1" data-lang="el">Συχνά πορευόμαστε αγνοώντας τα σήματα του ίδιου μας του σώματος. Το παρατεταμένο στρες και τα καταπιεσμένα συναισθήματα τείνουν να σωματοποιούνται. Μέσα από την εξειδίκευσή μου στη Συμβουλευτική Ψυχοσωματικής Υγείας, προσεγγίζουμε το σώμα ως τον πιο ειλικρινή χάρτη των εσωτερικών μας συγκρούσεων.</p>
+    <p class="lead reveal d1" data-lang="en">We often navigate life ignoring the signals of our own body. Prolonged stress and suppressed emotions tend to somatize. Through my specialization in Psychosomatic Health Counselling, we approach the body as the most honest map of our internal conflicts.</p>
     <div class="soma-grid">
       <div class="soma-card reveal d1">
-        <svg class="ic" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M20 6v8M20 26v8M6 20h8M26 20h8"/><circle cx="20" cy="20" r="5"/></svg>
+        <svg class="ic" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 6v8M20 26v8M6 20h8M26 20h8"/><circle cx="20" cy="20" r="5"/></svg>
         <h3 data-lang="el">Το σύμπτωμα ως «καμπανάκι»</h3><h3 data-lang="en">The symptom as a signal</h3>
-        <p data-lang="el">Οι σωματικές ενοχλήσεις, η χρόνια κόπωση ή οι επαναλαμβανόμενοι πονοκέφαλοι συχνά δεν είναι μόνο ιατρικά ζητήματα. Μέσα από το CAT δεν αντιμετωπίζουμε το σύμπτωμα ως εχθρό, αλλά ως αγγελιοφόρο: τι προσπαθεί να σας πει το σώμα σας;</p>
-        <p data-lang="en">Physical discomfort, chronic fatigue or recurring headaches are often not purely medical. Through CAT we don't treat the symptom as an enemy, but as a messenger: what is your body trying to tell you?</p>
+        <p data-lang="el">Οι χρόνιοι πόνοι, η ανεξήγητη κόπωση ή οι επίμονοι πονοκέφαλοι σπάνια είναι αμιγώς ιατρικά θέματα. Στο πλαίσιο του CAT, δεν πολεμάμε το σύμπτωμα, αλλά ακούμε τι προσπαθεί απεγνωσμένα να μας επικοινωνήσει.</p>
+        <p data-lang="en">Chronic pain, unexplained fatigue or persistent headaches are rarely purely medical issues. Within the CAT framework, we don't fight the symptom, but listen to what it is desperately trying to communicate to us.</p>
       </div>
       <div class="soma-card reveal d2">
-        <svg class="ic" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M8 20c4-8 20-8 24 0M8 20c4 8 20 8 24 0"/><circle cx="20" cy="20" r="3"/></svg>
-        <h3 data-lang="el">Αποκωδικοποιώντας το νόημα</h3><h3 data-lang="en">Decoding the meaning</h3>
-        <p data-lang="el">Δεν φτάνει να μάθουμε να χαλαρώνουμε — πρέπει να καταλάβουμε τι μας προκαλεί ένταση. Μαζί θα αποκαλύψουμε τους μηχανισμούς που σας αναγκάζουν να λειτουργείτε με «υπερστροφές», εξαντλώντας τα αποθέματά σας.</p>
-        <p data-lang="en">Learning to relax isn't enough — we need to understand what creates the tension. Together we'll uncover the mechanisms that push you to run in "overdrive", draining your reserves.</p>
+        <svg class="ic" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 20c4-8 20-8 24 0M8 20c4 8 20 8 24 0"/><circle cx="20" cy="20" r="3"/></svg>
+        <h3 data-lang="el">Αποκωδικοποιώντας την ένταση</h3><h3 data-lang="en">Decoding the tension</h3>
+        <p data-lang="el">Η επιφανειακή χαλάρωση δεν αρκεί εάν δεν αντιληφθούμε την πηγή της έντασης. Θα ερευνήσουμε μαζί τους βαθύτερους μηχανισμούς που σας ωθούν να λειτουργείτε στα όρια της εξάντλησης.</p>
+        <p data-lang="en">Surface-level relaxation is not enough if we don't understand the source of the tension. Together we will investigate the deeper mechanisms that push you to operate at the brink of exhaustion.</p>
       </div>
       <div class="soma-card reveal d3">
-        <svg class="ic" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M8 28c6-2 6-14 12-14s6 12 12 14"/><circle cx="14" cy="14" r="2.5"/><circle cx="26" cy="26" r="2.5"/></svg>
-        <h3 data-lang="el">Θεραπεία με σεβασμό στον ρυθμό σας</h3><h3 data-lang="en">Therapy at your pace</h3>
-        <p data-lang="el">Δεν υπάρχουν «μαγικές λύσεις» ή «γρήγορες συνταγές» — μόνο ο σεβασμός στον δικό σας, μοναδικό ρυθμό. Το ασφαλές περιβάλλον που δημιουργούμε είναι το πεδίο όπου μπορείτε να αφήσετε την κριτική και να βρείτε την αλήθεια σας.</p>
-        <p data-lang="en">There are no "magic solutions" or "quick recipes" — only respect for your own, unique pace. The safe environment we build is where you can let go of judgement and find your truth.</p>
+        <svg class="ic" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 28c6-2 6-14 12-14s6 12 12 14"/><circle cx="14" cy="14" r="2.5"/><circle cx="26" cy="26" r="2.5"/></svg>
+        <h3 data-lang="el">Ο δικός σας ρυθμός</h3><h3 data-lang="en">At your own pace</h3>
+        <p data-lang="el">Η ψυχοθεραπεία είναι μια τέχνη υπομονής. Δουλεύουμε αποκλειστικά στον δικό σας χρόνο, σε ένα περιβάλλον όπου η αυστηρή κριτική δίνει τη θέση της στη συμπόνια και την αποδοχή.</p>
+        <p data-lang="en">Psychotherapy is an art of patience. We work exclusively on your own time, in an environment where harsh judgment gives way to compassion and acceptance.</p>
       </div>
     </div>
-    <p class="soma-note reveal d2" data-lang="el">Η ενίσχυση της αυτογνωσίας δεν είναι πολυτέλεια· είναι το θεμέλιο για μια ζωή με περισσότερη αυθεντικότητα και λιγότερο βάρος.</p>
-    <p class="soma-note reveal d2" data-lang="en">Strengthening self-awareness isn't a luxury; it's the foundation for a life with more authenticity and less weight.</p>
+    <p class="soma-note reveal d2" data-lang="el">Η αυτογνωσία δεν είναι πολυτέλεια· είναι το πιο σταθερό θεμέλιο για μια ζωή αυθεντική και απαλλαγμένη από περιττά βάρη.</p>
+    <p class="soma-note reveal d2" data-lang="en">Self-awareness is not a luxury; it is the most solid foundation for an authentic life, free from unnecessary burdens.</p>
   </div>
 </section>
 
-<!-- ============ PROCESS ============ -->
 <section class="process" id="process">
   <div class="wrap">
     <div class="eyebrow reveal"><span data-lang="el">Η διαδρομή</span><span data-lang="en">The journey</span></div>
     <h2 class="reveal d1">
-      <span data-lang="el">Τι να περιμένετε <em class="serif-i">από τη συνεργασία μας</em></span>
-      <span data-lang="en">What to expect <em class="serif-i">from our work</em></span>
+      <span data-lang="el">Τι να περιμένετε <em class="serif-i">από εμάς</em></span>
+      <span data-lang="en">What to expect <em class="serif-i">from us</em></span>
     </h2>
     <div class="proc-grid">
       <div class="proc-step reveal d1"><span class="dot"></span>
         <div class="proc-num">01</div>
-        <h3 data-lang="el">Πρώτη γνωριμία</h3><h3 data-lang="en">First contact</h3>
-        <p data-lang="el">Μια ήρεμη πρώτη συνάντηση, δια ζώσης ή online, για να γνωριστούμε και να δούμε τι σας φέρνει εδώ — χωρίς πίεση και χωρίς κριτική.</p>
-        <p data-lang="en">A calm first meeting, in person or online, to get to know each other and understand what brings you here — no pressure, no judgement.</p>
+        <h3 data-lang="el">Η πρώτη συνάντηση</h3><h3 data-lang="en">The first meeting</h3>
+        <p data-lang="el">Μια γνωριμία σε κλίμα ηρεμίας, δια ζώσης ή online. Σκοπός είναι να ακούσουμε τι σας οδήγησε εδώ, χωρίς την παραμικρή πίεση.</p>
+        <p data-lang="en">An introduction in a calm atmosphere, in person or online. The goal is to hear what led you here, without the slightest pressure.</p>
       </div>
       <div class="proc-step reveal d2"><span class="dot"></span>
         <div class="proc-num">02</div>
-        <h3 data-lang="el">Κατανόηση μοτίβων</h3><h3 data-lang="en">Mapping patterns</h3>
-        <p data-lang="el">Μέσα από το CAT χαρτογραφούμε μαζί τα επαναλαμβανόμενα μοτίβα — πώς οι εμπειρίες του παρελθόντος διαμορφώνουν το σήμερα.</p>
-        <p data-lang="en">Through CAT we map the recurring patterns together — how past experiences shape the present.</p>
+        <h3 data-lang="el">Χαρτογράφηση</h3><h3 data-lang="en">Mapping</h3>
+        <p data-lang="el">Χρησιμοποιώντας τα εργαλεία του CAT, χαρτογραφούμε μαζί τον τρόπο με τον οποίο οι εμπειρίες του παρελθόντος υπαγορεύουν το παρόν.</p>
+        <p data-lang="en">Using CAT tools, we map together the way past experiences dictate the present.</p>
       </div>
       <div class="proc-step reveal d3"><span class="dot"></span>
         <div class="proc-num">03</div>
-        <h3 data-lang="el">Συνεργατική ανακάλυψη</h3><h3 data-lang="en">Collaborative discovery</h3>
-        <p data-lang="el">Αποκτάτε εργαλεία για να αλλάξετε τον τρόπο που σκέφτεστε και σχετίζεστε, δοκιμάζοντάς τα στην πραγματική σας ζωή.</p>
-        <p data-lang="en">You gain tools to change how you think and relate, testing them in your real life.</p>
+        <h3 data-lang="el">Ενεργή δράση</h3><h3 data-lang="en">Active practice</h3>
+        <p data-lang="el">Η κατανόηση μετατρέπεται σε πράξη. Σταδιακά, αποκτάτε τα απαραίτητα εργαλεία για να διαρρήξετε τα παλιά μοτίβα στην καθημερινότητά σας.</p>
+        <p data-lang="en">Understanding turns into action. Gradually, you acquire the necessary tools to break old patterns in your daily life.</p>
       </div>
       <div class="proc-step reveal d4"><span class="dot"></span>
         <div class="proc-num">04</div>
-        <h3 data-lang="el">Σταθερή αλλαγή</h3><h3 data-lang="en">Lasting change</h3>
-        <p data-lang="el">Στόχος δεν είναι η προσωρινή ανακούφιση, αλλά μόνιμες αλλαγές που βελτιώνουν την ποιότητα της ζωής σας.</p>
-        <p data-lang="en">The goal isn't temporary relief, but lasting changes that improve your quality of life.</p>
+        <h3 data-lang="el">Ουσιαστική αλλαγή</h3><h3 data-lang="en">Profound change</h3>
+        <p data-lang="el">Το ζητούμενο είναι η θεμελιώδης, μόνιμη αναβάθμιση της ποιότητας της ζωής σας, πέρα από την απλή εκτόνωση.</p>
+        <p data-lang="en">The objective is the fundamental, permanent upgrade of your quality of life, beyond simple catharsis.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============ PHILOSOPHY ============ -->
 <section class="philo">
   <div class="wrap">
     <div class="eyebrow reveal"><span data-lang="el">Η φιλοσοφία μου</span><span data-lang="en">My philosophy</span></div>
     <h2 class="reveal d1">
-      <span data-lang="el">Αρχές που καθοδηγούν κάθε συνεδρία</span>
-      <span data-lang="en">Principles that guide every session</span>
+      <span data-lang="el">Οι αρχές που διέπουν τη θεραπεία</span>
+      <span data-lang="en">Principles governing the therapy</span>
     </h2>
     <div class="philo-grid">
       <div class="philo-card reveal d1">
         <div class="pn">i.</div>
-        <h3 data-lang="el">Ασφάλεια πάνω απ' όλα</h3><h3 data-lang="en">Safety, above all</h3>
-        <p data-lang="el">Ένας χώρος απόλυτης ασφάλειας και αποδοχής, όπου μπορείτε να εκφραστείτε ανοιχτά, χωρίς φόβο κριτικής.</p>
-        <p data-lang="en">A space of complete safety and acceptance, where you can express yourself openly, without fear of judgement.</p>
+        <h3 data-lang="el">Η ασφάλεια ως προϋπόθεση</h3><h3 data-lang="en">Safety as a prerequisite</h3>
+        <p data-lang="el">Κανένα βήμα δεν μπορεί να γίνει εάν δεν νιώθετε απόλυτα προστατευμένοι. Διασφαλίζουμε ένα αυστηρά εχέμυθο περιβάλλον, ελεύθερο από οποιαδήποτε μορφή κριτικής.</p>
+        <p data-lang="en">No step can be taken if you don't feel completely protected. We ensure a strictly confidential environment, free from any form of judgment.</p>
       </div>
       <div class="philo-card reveal d2">
         <div class="pn">ii.</div>
-        <h3 data-lang="el">Σεβασμός στον ρυθμό σας</h3><h3 data-lang="en">Respect for your pace</h3>
-        <p data-lang="el">Καμία «μαγική λύση» — μόνο σεβασμός στον δικό σας, μοναδικό ρυθμό αλλαγής και ανάπτυξης.</p>
-        <p data-lang="en">No "magic solution" — only respect for your own, unique pace of change and growth.</p>
+        <h3 data-lang="el">Σεβασμός στο βίωμα</h3><h3 data-lang="en">Respecting your experience</h3>
+        <p data-lang="el">Απορρίπτουμε τις γρήγορες, εργαλειακές λύσεις. Η ανάπτυξή σας γίνεται οργανικά, σεβόμενοι τον μοναδικό χρόνο που χρειάζεται η δική σας ψυχή για να επουλωθεί.</p>
+        <p data-lang="en">We reject quick, instrumental fixes. Your growth happens organically, respecting the unique time your own psyche needs to heal.</p>
       </div>
       <div class="philo-card reveal d3">
         <div class="pn">iii.</div>
-        <h3 data-lang="el">Αυτογνωσία, όχι μόνο συμπτώματα</h3><h3 data-lang="en">Insight, not just symptoms</h3>
-        <p data-lang="el">Πέρα από τη διαχείριση του άγχους ή της θλίψης, στόχος είναι η ουσιαστική ενίσχυση της αυτογνωσίας.</p>
-        <p data-lang="en">Beyond managing anxiety or sadness, the goal is to meaningfully strengthen self-awareness.</p>
+        <h3 data-lang="el">Ολιστική ενδοσκόπηση</h3><h3 data-lang="en">Holistic introspection</h3>
+        <p data-lang="el">Η αντιμετώπιση ενός συμπτώματος είναι μόνο η αρχή. Σκάβουμε βαθύτερα για να χτίσουμε μια ακλόνητη, ρεαλιστική και ενδυναμωτική αίσθηση του εαυτού.</p>
+        <p data-lang="en">Treating a symptom is only the beginning. We dig deeper to build an unshakable, realistic, and empowering sense of self.</p>
       </div>
       <div class="philo-card reveal d4">
         <div class="pn">iv.</div>
-        <h3 data-lang="el">Διαρκής εξέλιξη</h3><h3 data-lang="en">Continuous development</h3>
-        <p data-lang="el">Ανελλιπής παρακολούθηση σεμιναρίων, εκπαιδεύσεων και εποπτειών, για συνεχώς ενισχυμένα επιστημονικά εργαλεία.</p>
-        <p data-lang="en">Ongoing seminars, trainings and supervisions, for a constantly strengthened scientific toolkit.</p>
+        <h3 data-lang="el">Επιστημονική αρτιότητα</h3><h3 data-lang="en">Scientific rigor</h3>
+        <p data-lang="el">Η ψυχοθεραπεία είναι δυναμική. Επενδύω διαρκώς σε νέες μετεκπαιδεύσεις και κλινικές εποπτείες για να σας προσφέρω ό,τι πιο σύγχρονο και αξιόπιστο έχει να επιδείξει η επιστήμη.</p>
+        <p data-lang="en">Psychotherapy is dynamic. I continuously invest in new advanced training and clinical supervision to offer you the most modern and reliable methods science has to show.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============ REVIEWS ============ -->
 <section class="reviews">
   <div class="wrap">
     <div class="rev-top">
       <div>
         <div class="eyebrow reveal"><span data-lang="el">Μαρτυρίες</span><span data-lang="en">Reviews</span></div>
         <h2 class="reveal d1">
-          <span data-lang="el">Λόγια ανθρώπων που <em class="serif-i">εμπιστεύτηκαν</em></span>
-          <span data-lang="en">Words from people who <em class="serif-i">trusted</em></span>
+          <span data-lang="el">Η εμπιστοσύνη <em class="serif-i">των θεραπευόμενων</em></span>
+          <span data-lang="en">The trust of <em class="serif-i">our clients</em></span>
         </h2>
       </div>
       <div class="rev-score reveal d1">
@@ -738,72 +796,34 @@ body.hero-shown .hero h1 .ln>span{transform:translateY(0)!important;animation:no
         </article>
         <article class="rev-card">
           <div class="quote-m">“</div>
-          <p data-lang="el">Είχα μια πολύ θετική εμπειρία. Από την πρώτη συνεδρία ένιωσα άνετα και ασφαλής να εκφραστώ χωρίς φόβο κριτικής. Δείχνει πραγματικό ενδιαφέρον, ακούει προσεκτικά και βοηθάει να κατανοήσω καλύτερα τον εαυτό μου.</p>
-          <p data-lang="en">I had a very positive experience. From the first session I felt comfortable and safe to express myself without fear of judgement. She shows real interest, listens carefully, and helps me understand myself better.</p>
+          <p data-lang="el">Από την πρώτη συνεδρία ένιωσα άνετα και ασφαλής να εκφραστώ χωρίς τον φόβο της κριτικής. Δείχνει πραγματικό ενδιαφέρον, ακούει προσεκτικά και βοηθάει να κατανοήσω καλύτερα τον εαυτό μου.</p>
+          <p data-lang="en">From the first session I felt comfortable and safe to express myself without fear of judgment. She shows real interest, listens carefully, and helps me understand myself better.</p>
           <div class="who"><b>Καλλιόπη</b><span class="when">06.05.2026</span><span class="sc">10.0</span></div>
         </article>
         <article class="rev-card">
           <div class="quote-m">“</div>
-          <p data-lang="el">Επαγγελματίας που σου δίνει χώρο και χρόνο έκφρασης, με ειλικρινή συναισθήματα, κατανόηση και επιστημονική προσέγγιση του ζητήματός μου.</p>
-          <p data-lang="en">A professional who gives you space and time to express yourself, with sincere feeling, understanding and a scientific approach to my concern.</p>
+          <p data-lang="el">Εξαιρετική επαγγελματίας που σου δίνει τον απαραίτητο χώρο και χρόνο έκφρασης, με ειλικρίνεια, βαθιά ενσυναίσθηση και άρτια επιστημονική προσέγγιση.</p>
+          <p data-lang="en">An excellent professional who gives you the necessary space and time to express yourself, with honesty, deep empathy and a solid scientific approach.</p>
           <div class="who"><b>Γεωργία</b><span class="when">04.05.2026</span><span class="sc">10.0</span></div>
         </article>
       </div>
     </div>
     <div class="rev-ctrl reveal d1">
-      <button id="revPrev" aria-label="Προηγούμενη μαρτυρία"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 3L5 8l5 5"/></svg></button>
-      <button id="revNext" aria-label="Επόμενη μαρτυρία"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 3l5 5-5 5"/></svg></button>
+      <button id="revPrev" aria-label="Προηγούμενη μαρτυρία"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3L5 8l5 5"/></svg></button>
+      <button id="revNext" aria-label="Επόμενη μαρτυρία"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3l5 5-5 5"/></svg></button>
       <a class="more" href="https://www.doctoranytime.gr/d/Psychologos/patridou-xristina#review-section" target="_blank" rel="noopener">
-        <span data-lang="el">Δείτε περισσότερες αξιολογήσεις</span><span data-lang="en">Read more reviews</span>
+        <span data-lang="el">Όλες οι αξιολογήσεις</span><span data-lang="en">Read all reviews</span>
       </a>
     </div>
   </div>
 </section>
 
-<!-- ============ FAQ ============ -->
-<section class="faq" id="faq">
-  <div class="wrap faq-grid">
-    <h2 class="reveal">
-      <span data-lang="el">Συχνές <em class="serif-i">ερωτήσεις</em></span>
-      <span data-lang="en">Frequent <em class="serif-i">questions</em></span>
-    </h2>
-    <div class="faq-list reveal d1">
-      <div class="faq-item">
-        <div class="faq-q"><span data-lang="el">Τι είναι το Γνωστικό Αναλυτικό Μοντέλο (CAT);</span><span data-lang="en">What is the Cognitive Analytic Model (CAT)?</span><span class="ar" aria-hidden="true"></span></div>
-        <div class="faq-a"><p data-lang="el">Είναι μια ολοκληρωμένη προσέγγιση που συνδυάζει γνωσιακά και αναλυτικά εργαλεία, ώστε να κατανοήσουμε τα βαθύτερα μοτίβα της συμπεριφοράς και των σχέσεων. Μέσα από τη «συνεργατική ανακάλυψη» αποκτάτε τα εργαλεία να αλλάξετε τον τρόπο που σκέφτεστε και σχετίζεστε.</p>
-        <p data-lang="en">It's an integrative approach combining cognitive and analytic tools to understand the deeper patterns of behaviour and relationships. Through "collaborative discovery" you gain the tools to change how you think and relate.</p></div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q"><span data-lang="el">Πόσο διαρκεί μια συνεδρία;</span><span data-lang="en">How long is a session?</span><span class="ar" aria-hidden="true"></span></div>
-        <div class="faq-a"><p data-lang="el">Κάθε συνεδρία διαρκεί 45 λεπτά, είτε γίνεται δια ζώσης στη Μυτιλήνη είτε online μέσω βιντεοκλήσης.</p>
-        <p data-lang="en">Each session lasts 45 minutes, whether in person in Mytilene or online by video call.</p></div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q"><span data-lang="el">Προσφέρετε online συνεδρίες;</span><span data-lang="en">Do you offer online sessions?</span><span class="ar" aria-hidden="true"></span></div>
-        <div class="faq-a"><p data-lang="el">Ναι. Οι online συνεδρίες μέσω βιντεοκλήσης παρέχονται με την ίδια εχεμύθεια και επιστημονική συνέπεια που διέπουν τις δια ζώσης συναντήσεις.</p>
-        <p data-lang="en">Yes. Online video-call sessions are offered with the same confidentiality and scientific consistency as in-person meetings.</p></div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q"><span data-lang="el">Υπάρχει ειδικό κόστος για ανέργους ή φοιτητές;</span><span data-lang="en">Is there a special rate for students or the unemployed?</span><span class="ar" aria-hidden="true"></span></div>
-        <div class="faq-a"><p data-lang="el">Ναι. Αναγνωρίζοντας τις κοινωνικές ανάγκες της εποχής, παρέχεται ειδικό, προνομιακό κόστος συνεδρίας για ανέργους και φοιτητές, ενισχύοντας την ισότιμη πρόσβαση στην ψυχική υγεία.</p>
-        <p data-lang="en">Yes. Recognising the social needs of our time, a special, preferential session rate is available for the unemployed and for students, supporting equal access to mental health care.</p></div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q"><span data-lang="el">Πόσο γρήγορα θα δω αποτελέσματα;</span><span data-lang="en">How quickly will I see results?</span><span class="ar" aria-hidden="true"></span></div>
-        <div class="faq-a"><p data-lang="el">Η ψυχοθεραπεία απαιτεί χρόνο — δεν υπάρχουν «μαγικές λύσεις» ή «γρήγορες συνταγές». Υπάρχει μόνο ο σεβασμός στον δικό σας, μοναδικό ρυθμό, με στόχο σταθερές και μόνιμες αλλαγές.</p>
-        <p data-lang="en">Therapy takes time — there are no "magic solutions" or "quick recipes". There is only respect for your own, unique pace, aiming for stable and lasting change.</p></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ CONTACT ============ -->
 <section class="contact" id="contact">
   <div class="glow"></div>
   <div class="wrap">
     <div class="eyebrow reveal"><span data-lang="el">Επικοινωνία</span><span data-lang="en">Get in touch</span></div>
     <h2 class="reveal d1">
-      <span data-lang="el">Το πρώτο βήμα ξεκινά <em class="serif-i">εδώ</em></span>
+      <span data-lang="el">Το πρώτο βήμα γίνεται <em class="serif-i">εδώ</em></span>
       <span data-lang="en">The first step starts <em class="serif-i">here</em></span>
     </h2>
     <div class="contact-grid">
@@ -814,16 +834,16 @@ body.hero-shown .hero h1 .ln>span{transform:translateY(0)!important;animation:no
         </div>
         <div class="row">
           <div class="k" data-lang="el">Τρόποι συνεδρίας</div><div class="k" data-lang="en">Session formats</div>
-          <div class="v" data-lang="el">Δια ζώσης &amp; Online βιντεοκλήση</div>
-          <div class="v" data-lang="en">In person &amp; Online video call</div>
+          <div class="v" data-lang="el">Δια ζώσης & Online βιντεοκλήση</div>
+          <div class="v" data-lang="en">In person & Online video call</div>
         </div>
         <div class="row">
-          <div class="k" data-lang="el">Κρατήσεις &amp; αξιολογήσεις</div><div class="k" data-lang="en">Booking &amp; reviews</div>
+          <div class="k" data-lang="el">Κρατήσεις</div><div class="k" data-lang="en">Booking portal</div>
           <a class="v" href="https://www.doctoranytime.gr/d/Psychologos/patridou-xristina" target="_blank" rel="noopener">doctoranytime.gr</a>
         </div>
         <a class="contact-cta" href="https://www.doctoranytime.gr/d/Psychologos/patridou-xristina" target="_blank" rel="noopener">
           <span data-lang="el">Κλείστε ραντεβού online</span><span data-lang="en">Book online</span>
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 11L11 3M11 3H4M11 3V10"/></svg>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11L11 3M11 3H4M11 3V10"/></svg>
         </a>
       </div>
       <div class="map-frame reveal d2">
@@ -834,12 +854,11 @@ body.hero-shown .hero h1 .ln>span{transform:translateY(0)!important;animation:no
   </div>
 </section>
 
-<!-- ============ FOOTER ============ -->
 <footer>
   <div class="foot-inner">
     <div class="fb"><span class="psi">Ψ</span> Χριστίνα Πατρίδου</div>
     <div class="foot-meta">© <span id="yr"></span> Χριστίνα Πατρίδου · MSc · <span data-lang="el">Όλα τα δικαιώματα διατηρούνται.</span><span data-lang="en">All rights reserved.</span></div>
-    <div class="foot-meta foot-credit"><span data-lang="el">Σχεδιασμός &amp; ανάπτυξη από</span><span data-lang="en">Designed &amp; developed by</span> <a href="https://www.advonmedia.com" target="_blank" rel="noopener">Advon Media</a></div>
+    <div class="foot-meta foot-credit"><span data-lang="el">Σχεδιασμός & ανάπτυξη από</span><span data-lang="en">Designed & developed by</span> <a href="https://www.advonmedia.com" target="_blank" rel="noopener">Advon Media</a></div>
   </div>
 </footer>
 
@@ -849,9 +868,21 @@ body.hero-shown .hero h1 .ln>span{transform:translateY(0)!important;animation:no
   const d=document, body=d.body;
 
   // ---- loader ----
-  window.addEventListener("load",()=>{ setTimeout(()=>d.getElementById("loader").classList.add("done"),1900); });
-  // lock hero headline visible once its entrance has played
-  setTimeout(()=>body.classList.add("hero-shown"),3200);
+  window.addEventListener("load",()=>{ setTimeout(()=>d.getElementById("loader").classList.add("done"),1600); });
+  setTimeout(()=>body.classList.add("hero-shown"),3000);
+
+  // ---- lightbox ----
+  const lb = d.getElementById('lightbox'), lbImg = lb.querySelector('img'), lbClose = lb.querySelector('.lb-close');
+  d.querySelectorAll('img:not(#lightbox img)').forEach(img => {
+    img.addEventListener('click', () => {
+      lbImg.src = img.src;
+      lb.classList.add('open');
+      body.style.overflow = 'hidden';
+    });
+  });
+  const closeLb = () => { lb.classList.remove('open'); body.style.overflow = ''; };
+  lbClose.addEventListener('click', closeLb);
+  lb.addEventListener('click', (e) => { if(e.target === lb) closeLb(); });
 
   // ---- nav scroll state ----
   const header=d.getElementById("header"), hero=d.querySelector(".hero");
@@ -865,11 +896,13 @@ body.hero-shown .hero h1 .ln>span{transform:translateY(0)!important;animation:no
   navIO.observe(hero);
 
   // ---- mobile menu ----
-  const toggle=d.getElementById("navToggle"), mm=d.getElementById("mobileMenu");
-  toggle.addEventListener("click",()=>{
+  const toggle=d.getElementById("navToggle"), mm=d.getElementById("mobileMenu"), mClose=d.getElementById("mobileClose");
+  const openMenu = () => {
     const open=body.classList.toggle("menu-open");
     toggle.setAttribute("aria-expanded",open);
-  });
+  };
+  toggle.addEventListener("click", openMenu);
+  mClose.addEventListener("click", openMenu);
   mm.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>body.classList.remove("menu-open")));
 
   // ---- language toggle ----
@@ -880,40 +913,32 @@ body.hero-shown .hero h1 .ln>span{transform:translateY(0)!important;animation:no
       body.classList.toggle("lang-en",set==="en");
       d.documentElement.lang=set;
       d.querySelectorAll(".lang-toggle button").forEach(b=>b.classList.toggle("active",b.dataset.set===set));
+      setTimeout(step, 100); // re-adjust review carousel on lang swap
     });
   });
 
-  // ---- scroll reveal ----
+  // ---- scroll reveal & service thread ----
   const revIO=new IntersectionObserver((e)=>{
     e.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add("in"); revIO.unobserve(en.target);} });
-  },{threshold:.12,rootMargin:"0px 0px -8% 0px"});
+  },{threshold:.12,rootMargin:"0px 0px -10% 0px"});
   d.querySelectorAll(".reveal").forEach(el=>revIO.observe(el));
 
-  // ---- services accordion ----
-  d.querySelectorAll(".svc").forEach(svc=>{
-    const head=svc.querySelector(".svc-head"), bodyEl=svc.querySelector(".svc-body");
-    head.addEventListener("click",()=>{
-      const open=svc.classList.contains("open");
-      d.querySelectorAll(".svc").forEach(s=>{s.classList.remove("open");s.querySelector(".svc-body").style.maxHeight=null;});
-      if(!open){ svc.classList.add("open"); bodyEl.style.maxHeight=bodyEl.scrollHeight+"px"; }
-    });
-  });
-
-  // ---- faq accordion ----
-  d.querySelectorAll(".faq-item").forEach(item=>{
-    const q=item.querySelector(".faq-q"), a=item.querySelector(".faq-a");
-    q.addEventListener("click",()=>{
-      const open=item.classList.contains("open");
-      d.querySelectorAll(".faq-item").forEach(it=>{it.classList.remove("open");it.querySelector(".faq-a").style.maxHeight=null;});
-      if(!open){ item.classList.add("open"); a.style.maxHeight=a.scrollHeight+"px"; }
-    });
-  });
-  // recompute open panels on resize / lang change
-  const recompute=()=>{
-    d.querySelectorAll(".svc.open .svc-body,.faq-item.open .faq-a").forEach(el=>{el.style.maxHeight=el.scrollHeight+"px";});
-  };
-  window.addEventListener("resize",recompute);
-  d.querySelectorAll(".lang-toggle button").forEach(b=>b.addEventListener("click",()=>setTimeout(recompute,60)));
+  const pathFill = d.getElementById('svcProgress'), thread = d.getElementById('svcThread');
+  if(thread && pathFill) {
+    const updateThread = () => {
+      const rect = thread.getBoundingClientRect();
+      const triggerPoint = window.innerHeight * 0.65;
+      if (rect.top < triggerPoint) {
+        let h = triggerPoint - rect.top;
+        if (h > rect.height) h = rect.height;
+        pathFill.style.height = h + 'px';
+      } else {
+        pathFill.style.height = '0px';
+      }
+    };
+    window.addEventListener('scroll', updateThread, {passive: true});
+    updateThread();
+  }
 
   // ---- reviews carousel ----
   const track=d.getElementById("revTrack");
@@ -931,12 +956,13 @@ body.hero-shown .hero h1 .ln>span{transform:translateY(0)!important;animation:no
   const go=(n)=>{idx=(idx+n+cards.length)%cards.length;step();};
   d.getElementById("revNext")?.addEventListener("click",()=>{go(1);reset();});
   d.getElementById("revPrev")?.addEventListener("click",()=>{go(-1);reset();});
-  const auto=()=>{timer=setInterval(()=>go(1),5500);};
+  const auto=()=>{timer=setInterval(()=>go(1),6000);};
   const reset=()=>{clearInterval(timer);auto();};
   if(cards.length){ auto(); track.parentElement.addEventListener("mouseenter",()=>clearInterval(timer)); track.parentElement.addEventListener("mouseleave",auto); window.addEventListener("resize",step); }
 
   // ---- year ----
-  d.getElementById("yr").textContent=new Date().getFullYear();
+  const yrEl = d.getElementById("yr");
+  if(yrEl) yrEl.textContent = new Date().getFullYear();
 })();
 </script>
 </body>
