@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="el">
 <head>
 <meta charset="UTF-8">
@@ -386,6 +386,28 @@ section { position: relative; }
 }
 .rev-ctrl .more:hover { color: var(--rose); }
 
+/* ---------- SPACE / GALLERY ---------- */
+.space { background: var(--paper); }
+.space h2 { font-size: clamp(2rem, 5vw, 4rem); max-width: 14ch; margin-bottom: clamp(2.5rem, 5vw, 4rem); }
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(1rem, 2vw, 1.5rem);
+  align-items: center;
+}
+.gallery-grid img {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(28,46,46,.06);
+  transition: transform .4s var(--ease), box-shadow .4s var(--ease);
+  border: 1px solid var(--mist);
+}
+.gallery-grid img:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(28,46,46,.12);
+}
+
 /* ---------- CONTACT ---------- */
 .contact { background: var(--ink); color: var(--paper); position: relative; overflow: hidden; }
 .contact .glow {
@@ -416,11 +438,14 @@ footer {
   padding: clamp(2.5rem, 5vw, 3.5rem) var(--pad);
 }
 .foot-inner { max-width: 1400px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: space-between; align-items: center; }
+.foot-brand { display: flex; flex-direction: column; gap: 0.4rem; }
 .foot-inner .fb { font-family: var(--display); font-style: italic; font-size: 1.3rem; display: flex; align-items: center; gap: .6rem; }
 .foot-inner .fb .psi {
   width: 1.8rem; height: 1.8rem; border: 1px solid currentColor; border-radius: 50%;
   display: inline-flex; align-items: center; justify-content: center; font-size: .95rem;
 }
+.foot-links a { font-size: .85rem; color: var(--rose-soft); letter-spacing: .02em; border-bottom: 1px solid transparent; transition: border-color .3s; }
+.foot-links a:hover { border-color: var(--rose-soft); }
 .foot-meta { font-size: .8rem; color: rgba(244,239,231,.6); letter-spacing: .03em; }
 .foot-credit a { color: var(--rose-soft); border-bottom: 1px solid transparent; transition: border-color .3s; }
 .foot-credit a:hover { border-color: var(--rose-soft); }
@@ -434,11 +459,13 @@ footer {
   .soma-grid { grid-template-columns: 1fr; }
   .proc-grid { grid-template-columns: 1fr 1fr; }
   .philo-grid { grid-template-columns: 1fr; }
+  .gallery-grid { grid-template-columns: repeat(2, 1fr); }
   .about-portrait .frame { aspect-ratio: 3/3.4; max-width: 440px; margin: 0 auto; }
   .map-frame { min-height: 320px; order: 2; margin-top: 1rem; }
 }
 @media(max-width: 560px) {
   .proc-grid { grid-template-columns: 1fr; }
+  .gallery-grid { grid-template-columns: 1fr; }
   .rev-top { align-items: flex-start; flex-direction: column; }
   .rev-score { text-align: left; }
 }
@@ -819,6 +846,24 @@ body.hero-shown .hero h1 .ln > span { transform: translateY(0)!important; animat
   </div>
 </section>
 
+<section class="space" id="space">
+  <div class="wrap">
+    <div class="eyebrow reveal"><span data-lang="el">Ο Χώρος</span><span data-lang="en">The Space</span></div>
+    <h2 class="reveal d1">
+      <span data-lang="el">Ένα περιβάλλον <em class="serif-i">ηρεμίας</em></span>
+      <span data-lang="en">An environment of <em class="serif-i">calm</em></span>
+    </h2>
+    <div class="gallery-grid">
+      <img src="https://raw.githubusercontent.com/agelmet/PATRIDOU/df3b069fe1967801d6ebfd1de654279be547f778/pat1.jpg" alt="Άποψη του χώρου" class="reveal d1" loading="lazy">
+      <img src="https://raw.githubusercontent.com/agelmet/PATRIDOU/df3b069fe1967801d6ebfd1de654279be547f778/pat2.jpg" alt="Άποψη του χώρου" class="reveal d2" loading="lazy">
+      <img src="https://raw.githubusercontent.com/agelmet/PATRIDOU/df3b069fe1967801d6ebfd1de654279be547f778/pat3.jpg" alt="Άποψη του χώρου" class="reveal d3" loading="lazy">
+      <img src="https://raw.githubusercontent.com/agelmet/PATRIDOU/df3b069fe1967801d6ebfd1de654279be547f778/pat4.jpg" alt="Άποψη του χώρου" class="reveal d1" loading="lazy">
+      <img src="https://raw.githubusercontent.com/agelmet/PATRIDOU/df3b069fe1967801d6ebfd1de654279be547f778/pat5.jpg" alt="Άποψη του χώρου" class="reveal d2" loading="lazy">
+      <img src="https://raw.githubusercontent.com/agelmet/PATRIDOU/df3b069fe1967801d6ebfd1de654279be547f778/pat6.jpg" alt="Άποψη του χώρου" class="reveal d3" loading="lazy">
+    </div>
+  </div>
+</section>
+
 <section class="contact" id="contact">
   <div class="glow"></div>
   <div class="wrap">
@@ -857,7 +902,14 @@ body.hero-shown .hero h1 .ln > span { transform: translateY(0)!important; animat
 
 <footer>
   <div class="foot-inner">
-    <div class="fb"><span class="psi">Ψ</span> <span data-lang="el">Χριστίνα Πατρίδου</span><span data-lang="en">Christina Patridou</span></div>
+    <div class="foot-brand">
+      <div class="fb"><span class="psi">Ψ</span> <span data-lang="el">Χριστίνα Πατρίδου</span><span data-lang="en">Christina Patridou</span></div>
+      <div class="foot-links">
+        <a href="https://www.hiwellapp.com/el/%CF%88%CF%85%CF%87%CE%BF%CE%B8%CE%B5%CF%81%CE%B1%CF%80%CE%B5%CF%85%CF%84%CE%AD%CF%82/christina-patridou" target="_blank" rel="noopener">
+          <span data-lang="el">Προφίλ Hiwell</span><span data-lang="en">Hiwell Profile</span>
+        </a>
+      </div>
+    </div>
     <div class="foot-meta">© <span id="yr"></span> <span data-lang="el">Χριστίνα Πατρίδου</span><span data-lang="en">Christina Patridou</span> · MSc · <span data-lang="el">Όλα τα δικαιώματα διατηρούνται.</span><span data-lang="en">All rights reserved.</span></div>
     <div class="foot-meta foot-credit"><span data-lang="el">Σχεδιασμός & ανάπτυξη από</span><span data-lang="en">Designed & developed by</span> <a href="https://www.advonmedia.com" target="_blank" rel="noopener">Advon Media</a></div>
   </div>
